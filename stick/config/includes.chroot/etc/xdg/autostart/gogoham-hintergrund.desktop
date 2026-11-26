@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=GoGoHam background
+Exec=/usr/local/bin/gogoham-hintergrund
+X-KDE-autostart-phase=2
+NoDisplay=true
+OnlyShowIn=KDE;

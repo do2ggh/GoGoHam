@@ -1,0 +1,28 @@
+name: "Idee oder Wunsch · Idea or wish"
+description: "Vorschlag für eine neue Funktion oder einen neuen Contest · Suggestion for a new feature or contest"
+labels: ["idee"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deine Idee! Ich kann nicht jeden Wunsch umsetzen – ein „Nein“ ist nie böse gemeint.
+        Bitte keinen Programmcode, sondern in Worten beschreiben (siehe CONTRIBUTING.md).
+
+        *Thanks for your idea! I cannot implement every wish – a “no” is never meant unkindly.
+        Please describe it in words, not as code (see CONTRIBUTING.md).*
+  - type: textarea
+    id: ziel
+    attributes:
+      label: "Was möchtest du erreichen? · What do you want to achieve?"
+      description: "Was soll im Contest leichter oder besser gehen? · What should become easier or better in the contest?"
+    validations:
+      required: true
+  - type: textarea
+    id: vorschlag
+    attributes:
+      label: "Wie stellst du es dir vor? · How do you imagine it?"
+  - type: input
+    id: regeln
+    attributes:
+      label: "Neuer Contest: Link zur offiziellen Ausschreibung · New contest: link to the official rules"
+      placeholder: "https://…"

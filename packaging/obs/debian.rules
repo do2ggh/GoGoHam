@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+export PYBUILD_NAME=gogoham
+# Die Tests laufen bei jedem Hochladen auf GitHub; hier nur bauen
+export PYBUILD_DISABLE=test
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+# 0.10.25: USB-Freigabe (uaccess) – Funkgerät-Kabel, GPS, WinKeyer ohne Gruppe nutzbar
+override_dh_auto_install:
+	dh_auto_install
+	install -Dm644 gogoham/assets/70-gogoham.rules debian/gogoham/usr/lib/udev/rules.d/70-gogoham.rules

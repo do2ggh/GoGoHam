@@ -1,0 +1,140 @@
+#!/bin/sh
+# GoGoHam-Live-Stick: beim ERSTEN Start selbst einrichten (ab 0.10.22).
+# Wurde das Abbild nur mit Rufus (DD-Modus), Etcher, Fedora Media Writer oder dd geschrieben,
+# fehlen Datenteil (ext4 „GGH-DATEN“) und Austausch-Ordner (exFAT „GoGoHam“) – dann speichert der
+# Stick nichts. Hier werden beide in den FREIEN Platz hinter dem System gelegt, genau wie
+# schreiben.sh (aufteilung.sh): Datenteil ab 8 GiB, Austausch-Ordner ¼ vom Rest (2–16 GiB).
+#
+# Sicherheit: nur der USB-Stick, von dem gestartet wird (Kennung GOGOHAM_LIVE), nur freier Platz,
+# nichts Vorhandenes wird verändert; schon eingerichtet / zu klein / unklar → nichts tun.
+# Läuft vor live-boot und vor gogoham-reset, also bevor irgendetwas vom Stick eingehängt ist.
+PREREQ="udev"
+prereqs() { echo "$PREREQ"; }
+case "$1" in
+    prereqs) prereqs; exit 0 ;;
+esac
+
+grep -q persistence /proc/cmdline || exit 0
+LOG=/run/gogoham-einrichten.log
+log() { echo "$*" >> "$LOG"; }
+melde() {
+    log "$*"
+    if command -v plymouth >/dev/null 2>&1 && plymouth --ping 2>/dev/null; then
+        plymouth display-message --text="$*" 2>/dev/null || true
+    fi
+    echo "GoGoHam: $*"
+}
+
+# Echte Werkzeuge aus /usr/lib/gogoham (siehe hooks/gogoham-live-boot) – die gleichnamigen im
+# Startsystem sind oft BusyBox-Fassungen (blkid ohne -p, mke2fs ohne ext4).
+G=/usr/lib/gogoham
+tool() { if [ -x "$G/$1" ]; then echo "$G/$1"; else echo "$1"; fi; }
+BLKID=$(tool blkid); SFDISK=$(tool sfdisk); MKE2FS=$(tool mke2fs); MKEXFAT=$(tool mkfs.exfat)
+DEBUGFS=$(tool debugfs); BLOCKDEV=$(tool blockdev); PARTX=$(tool partx)
+label() { "$BLKID" -p -s LABEL -o value "$1" 2>/dev/null; }
+
+# ------------------------------------------------------------ Start-Stick finden (bis 15 s)
+DISK=""
+i=0
+while [ "$i" -lt 15 ]; do
+    for s in /sys/block/*; do
+        n=${s##*/}
+        case "$n" in loop*|ram*|sr*|zram*) continue ;; esac
+        if [ "$(label "/dev/$n")" = "GOGOHAM_LIVE" ]; then DISK=$n; break; fi
+    done
+    [ -n "$DISK" ] && break
+    sleep 1; i=$((i + 1))
+done
+[ -n "$DISK" ] || { log "kein Start-Stick (GOGOHAM_LIVE) gefunden"; exit 0; }
+log "Start-Stick: /dev/$DISK"
+
+# nur USB-Laufwerke
+case "$(readlink -f "/sys/block/$DISK")" in
+    */usb*) ;;
+    *) log "kein USB-Laufwerk – nichts zu tun"; exit 0 ;;
+esac
+
+part() {    # Name des n-ten Teils (sdb → sdb4, mmcblk0 → mmcblk0p4)
+    case "$DISK" in *[0-9]) echo "/dev/${DISK}p$1" ;; *) echo "/dev/$DISK$1" ;; esac
+}
+
+# schon eingerichtet?
+for p in /sys/block/"$DISK"/"$DISK"*; do
+    [ -e "$p/partition" ] || continue
+    if [ "$(label "/dev/${p##*/}")" = "GGH-DATEN" ]; then
+        log "Datenteil vorhanden – nichts zu tun"; exit 0
+    fi
+done
+
+# ------------------------------------------------------------ Platz prüfen (wie aufteilung.sh)
+GIB=1073741824
+DATEN_START=16777216                         # 8 GiB in Sektoren
+RAND=$((8 * 1024 * 1024))
+SEK=$(cat "/sys/block/$DISK/size")
+GROESSE=$((SEK * 512))
+REST=$((GROESSE - DATEN_START * 512 - RAND))
+T=$((REST / 4))
+[ "$T" -ge $((2 * GIB)) ] || T=$((2 * GIB))
+[ "$T" -le $((16 * GIB)) ] || T=$((16 * GIB))
+T=$((T / 1048576 * 1048576))
+if [ $((REST - T)) -lt $((4 * GIB)) ]; then
+    log "Stick zu klein ($GROESSE Byte) – läuft ohne Speichern"; exit 0
+fi
+# bisher genau die drei Teile des Abbilds, alle vor 8 GiB?
+ANZ=0; ENDE=0
+for p in /sys/block/"$DISK"/"$DISK"*; do
+    [ -e "$p/partition" ] || continue
+    ANZ=$((ANZ + 1))
+    e=$(( $(cat "$p/start") + $(cat "$p/size") ))
+    [ "$e" -gt "$ENDE" ] && ENDE=$e
+done
+FORTSETZEN=0
+if [ "$ANZ" -eq 5 ] && [ -e "/sys/block/$DISK/$(basename "$(part 4)")/start" ] && \
+        [ "$(cat "/sys/block/$DISK/$(basename "$(part 4)")/start")" = "$DATEN_START" ] && \
+        [ -z "$("$BLKID" -p -s TYPE -o value "$(part 4)" 2>/dev/null)" ]; then
+    FORTSETZEN=1                                  # abgebrochene Einrichtung: nur noch formatieren
+    log "Teile 4/5 vorhanden, aber leer – Einrichtung wird fortgesetzt"
+elif [ "$ANZ" -gt 3 ] || [ "$ENDE" -gt "$DATEN_START" ]; then
+    log "unerwartete Aufteilung ($ANZ Teile, Ende $ENDE) – nichts verändert"; exit 0
+fi
+
+# ------------------------------------------------------------ einrichten
+melde "Stick wird eingerichtet – nur beim ersten Start, bitte nicht abziehen …"
+DEV=/dev/$DISK
+if [ "$FORTSETZEN" = 0 ]; then
+LINUX=0FC63DAF-8483-4772-8E79-3D69D8477DE4
+MSDATA=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7
+"$SFDISK" -q --relocate gpt-bak-std "$DEV" >> "$LOG" 2>&1 || { log "relocate fehlgeschlagen"; exit 0; }
+"$SFDISK" -q --part-type "$DEV" 1 "$LINUX" >> "$LOG" 2>&1 || true
+"$SFDISK" -q --part-type "$DEV" 3 "$LINUX" >> "$LOG" 2>&1 || true
+LETZT=$((SEK - 34))                          # letzter nutzbarer Sektor (GPT-Sicherung am Ende)
+T_SEK=$((T / 512))
+D_SEK=$((LETZT - DATEN_START - T_SEK - 2048))
+[ "$D_SEK" -gt 2097152 ] || { log "zu wenig Platz ($D_SEK)"; exit 0; }
+printf 'start=%s, size=%s, type=%s, name="GGH-DATEN"\nstart=%s, size=%s, type=%s, name="GoGoHam"\n' \
+    "$DATEN_START" "$D_SEK" "$LINUX" "$((DATEN_START + D_SEK))" "$T_SEK" "$MSDATA" \
+    | "$SFDISK" -q --append "$DEV" >> "$LOG" 2>&1 || { log "Teile anlegen fehlgeschlagen"; exit 0; }
+"$BLOCKDEV" --rereadpt "$DEV" 2>/dev/null || "$PARTX" -u "$DEV" 2>/dev/null || true
+fi
+udevadm settle 2>/dev/null || sleep 2
+P4=$(part 4); P5=$(part 5)
+i=0
+while { [ ! -b "$P4" ] || [ ! -b "$P5" ]; } && [ "$i" -lt 10 ]; do sleep 1; i=$((i + 1)); done
+[ -b "$P4" ] && [ -b "$P5" ] || { log "Teile 4/5 nicht erschienen"; exit 0; }
+melde "Datenteil wird angelegt – das kann bei langsamen Sticks einige Minuten dauern …"
+"$MKE2FS" -t ext4 -q -F -L GGH-DATEN -E lazy_itable_init=0,lazy_journal_init=0 "$P4" >> "$LOG" 2>&1 \
+    || { log "mkfs.ext4 fehlgeschlagen"; exit 0; }
+"$DEBUGFS" -w -R "ssv mount_opts commit=30" "$P4" >/dev/null 2>&1 || true
+"$MKEXFAT" -q -L GoGoHam "$P5" >> "$LOG" 2>&1 || log "mkfs.exfat fehlgeschlagen (Austausch-Ordner fehlt)"
+modprobe ext4 2>/dev/null || true
+mnt=/run/gogoham-einrichten
+mkdir -p "$mnt"
+if mount -t ext4 "$P4" "$mnt" 2>>"$LOG"; then
+    echo "/ union" > "$mnt/persistence.conf"
+    cp "$LOG" "$mnt/.gogoham-eingerichtet.log" 2>/dev/null || true
+    sync
+    umount "$mnt"
+fi
+udevadm settle 2>/dev/null || true
+melde "Stick ist eingerichtet."
+exit 0

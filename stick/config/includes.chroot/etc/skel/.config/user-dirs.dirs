@@ -1,0 +1,2 @@
+# GoGoHam-Live-Stick: Desktop-Ordner fest (dort liegen die Verknüpfungen), in jeder Sprache gleich
+XDG_DESKTOP_DIR="$HOME/Desktop"

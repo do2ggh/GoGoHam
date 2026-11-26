@@ -1,0 +1,15 @@
+[Unit]
+Description=GoGoHam: eingebaute Uhr passend zum Rechner lesen (Windows: Ortszeit, sonst UTC)
+DefaultDependencies=no
+After=local-fs.target systemd-udev-settle.service
+Wants=systemd-udev-settle.service
+Before=sysinit.target time-set.target chrony.service display-manager.service
+ConditionPathExists=/etc/gogoham/livestick.json
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/gogoham-uhr
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

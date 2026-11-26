@@ -1,0 +1,16 @@
+#!/bin/sh
+# GoGoHam-Live-Stick: Zeitzone stellen (GoGoHam ruft das über pkexec mit der Zone aus dem Locator).
+# Bewusst NICHT „timedatectl set-timezone“: Das schreibt bei Ortszeit-Uhr (Windows-Rechner) die
+# eingebaute Uhr neu. Hier wird sie nur gelesen.
+z="$1"
+case "$z" in ""|*..*|/*) echo "ungültige Zeitzone" >&2; exit 2 ;; esac
+[ -f "/usr/share/zoneinfo/$z" ] || { echo "unbekannte Zeitzone: $z" >&2; exit 2; }
+ln -sf "/usr/share/zoneinfo/$z" /etc/localtime
+echo "$z" > /etc/timezone
+# Nur wenn die eingebaute Uhr Ortszeit führt, hängt die Uhrzeit von der Zone ab – und nur, solange
+# chrony noch nicht mit dem Internet abgeglichen hat (sonst ist die Systemuhr schon richtig).
+if grep -qx LOCAL /etc/adjtime 2>/dev/null && \
+   ! chronyc -n tracking 2>/dev/null | grep -q 'Leap status *: Normal'; then
+    /usr/local/sbin/gogoham-uhr lesen
+fi
+exit 0

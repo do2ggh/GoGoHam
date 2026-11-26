@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=GoGoHam
+GenericName=Contest Logger
+GenericName[de]=Contest-Logger
+Comment=Fast contest logger for ham radio by DO2GGH
+Comment[de]=Schneller Contest-Logger für den Amateurfunk by DO2GGH
+Exec=gogoham
+Icon=gogoham
+Terminal=false
+Categories=HamRadio;Network;Utility;
+Keywords=Contest;Logger;Log;Logbook;Ham;Ham radio;Amateur radio;Cabrillo;CQWW;WPX;FT8;RTTY;CW;DX;
+Keywords[de]=Contest;Logger;Log;Logbuch;Amateurfunk;Funk;Ham;Cabrillo;CQWW;WPX;FT8;RTTY;CW;DX;
+StartupWMClass=gogoham
+StartupNotify=true

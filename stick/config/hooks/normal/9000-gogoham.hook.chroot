@@ -1,0 +1,48 @@
+#!/bin/sh
+# Live-Stick: kein Ruhezustand (fremde Rechner gehen sonst mitten im Contest schlafen)
+set -e
+for t in sleep suspend hibernate hybrid-sleep suspend-then-hibernate; do
+    systemctl mask "$t.target"
+done
+systemctl enable gogoham-austausch.service || true
+systemctl enable gogoham-uhr.service || true
+chmod 0755 /usr/local/sbin/gogoham-stick-reset /usr/local/sbin/gogoham-austausch \
+    /usr/local/sbin/gogoham-uhr /usr/local/sbin/gogoham-stick-zeitzone /usr/local/bin/gogoham-hintergrund \
+    /usr/local/sbin/gogoham-stick-kopie
+# Zeitdienst: chrony (ohne rtcsync, siehe /etc/chrony/chrony.conf); timesyncd nicht daneben
+systemctl enable chrony.service || true
+systemctl mask systemd-timesyncd.service || true
+# Desktop: Verknüpfungen GoGoHam und Austausch-Ordner (vor dem Anlegen des Benutzers in skel)
+install -D -m 0755 /usr/share/applications/gogoham.desktop /etc/skel/Desktop/gogoham.desktop
+chmod 0755 /etc/skel/Desktop/austausch.desktop
+chmod 0440 /etc/sudoers.d/gogoham-live
+# Kein „Willkommen bei Plasma“, kein Warten aufs Netz beim Start
+apt-get purge -y plasma-welcome || true
+systemctl disable NetworkManager-wait-online.service || true
+# Benutzer schon beim Bauen anlegen: live-config müsste das sonst beim ersten Start tun, und auf
+# langsamen Sticks dauert jeder einzelne Schritt Sekunden (gemessen: 2,5 Minuten).
+if ! id gogoham >/dev/null 2>&1; then
+    adduser --disabled-password --comment GoGoHam gogoham
+fi
+# Benutzer gab es schon (älterer Bau-Stand im Cache): Desktop-Dateien nachreichen
+mkdir -p /home/gogoham/Desktop /home/gogoham/.config
+cp -n /etc/skel/Desktop/*.desktop /home/gogoham/Desktop/
+cp -n /etc/skel/.config/user-dirs.dirs /home/gogoham/.config/
+chown -R gogoham:gogoham /home/gogoham/Desktop /home/gogoham/.config
+for g in audio cdrom dip floppy video plugdev netdev dialout bluetooth sudo users; do
+    getent group "$g" >/dev/null && adduser gogoham "$g" >/dev/null || true
+done
+# Das Programmverzeichnis (ld.so.cache) ist im Abbild fertig – nicht bei jedem ersten Start neu bauen
+systemctl mask ldconfig.service
+# Kein Hintergrund-Schreiben auf den Stick (Lenovo-Test 2026-11-13: PackageKit lud Paketlisten und
+# blockierte auf einem langsamen Stick den ganzen Start). Programme kommen mit dem nächsten Stick-Bau;
+# WS/fldigi installiert GoGoHam selbst (apt-get/flatpak, ohne PackageKit).
+systemctl mask packagekit.service packagekit-offline-update.service \
+    apt-daily.timer apt-daily-upgrade.timer man-db.timer || true
+apt-get purge -y plasma-discover || true
+# Startbild (Plymouth): GoGoHam-Logo, Ladeanzeige aus dem Thema „spinner“
+for f in /usr/share/plymouth/themes/spinner/*.png; do
+    cp -n "$f" /usr/share/plymouth/themes/gogoham/
+done
+plymouth-set-default-theme gogoham
+update-initramfs -u -k all

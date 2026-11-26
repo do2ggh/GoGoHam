@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream-Beschreibung (ab 0.10.47.1): damit Software-Verwaltungen (Discover, GNOME Software …)
+     GoGoHam mit Beschreibung und Bildern zeigen und unter „Amateurfunk“ finden. -->
+<component type="desktop-application">
+  <id>io.github.do2ggh.GoGoHam</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <name>GoGoHam</name>
+  <summary>Fast contest logger for ham radio</summary>
+  <summary xml:lang="de">Schneller Contest-Logger für den Amateurfunk</summary>
+  <developer id="io.github.do2ggh">
+    <name>DO2GGH</name>
+  </developer>
+  <description>
+    <p>
+      A fast contest logger for Linux: type the call, space, exchange, Enter – done.
+      Dupes, new multipliers and the score are calculated while you type.
+    </p>
+    <p xml:lang="de">
+      Ein schneller Contest-Logger für Linux: Rufzeichen, Leertaste, Austausch, Enter – fertig.
+      Dupes, neue Multiplikatoren und die Punkte werden schon beim Tippen berechnet.
+    </p>
+    <ul>
+      <li>About 130 HF and VHF contests as readable rule files, new ones arrive automatically</li>
+      <li xml:lang="de">Rund 130 KW- und UKW-Contests als lesbare Regel-Dateien, neue kommen von selbst</li>
+      <li>CAT control via Hamlib, also Icom radios over LAN/WLAN; QSOs from WSJT-X and fldigi</li>
+      <li xml:lang="de">CAT-Steuerung über Hamlib, auch Icom-Geräte über LAN/WLAN; QSOs aus WSJT-X und fldigi</li>
+      <li>CW via the radio or a WinKey, voice memories and auto CQ</li>
+      <li xml:lang="de">CW über das Funkgerät oder einen WinKey, Sprachspeicher und Auto-CQ</li>
+      <li>DX cluster with band map, grey line map, rotator control and GPS receiver</li>
+      <li xml:lang="de">DX-Cluster mit Bandmap, Grayline-Karte, Rotorsteuerung und GPS-Empfänger</li>
+      <li>Station log for multi-op over the local network</li>
+      <li xml:lang="de">Stationslog für Multi-OP über das lokale Netzwerk</li>
+      <li>Export as Cabrillo, ADIF and EDI with log check before submitting</li>
+      <li xml:lang="de">Export als Cabrillo, ADIF und EDI mit Log-Prüfung vor dem Einsenden</li>
+      <li>Practice mode for CW and SSB – nothing is transmitted</li>
+      <li xml:lang="de">Übungsmodus für CW und SSB – es wird nichts gesendet</li>
+    </ul>
+    <p>
+      Free software (GPL-3.0). User interface in many languages, manual in German and English.
+    </p>
+    <p xml:lang="de">
+      Freie Software (GPL-3.0). Oberfläche in vielen Sprachen, Handbuch auf Deutsch und Englisch.
+    </p>
+  </description>
+  <launchable type="desktop-id">gogoham.desktop</launchable>
+  <provides>
+    <binary>gogoham</binary>
+  </provides>
+  <categories>
+    <category>HamRadio</category>
+    <category>Network</category>
+  </categories>
+  <keywords>
+    <keyword>contest</keyword>
+    <keyword>logger</keyword>
+    <keyword>logbook</keyword>
+    <keyword>ham radio</keyword>
+    <keyword>amateur radio</keyword>
+    <keyword>Cabrillo</keyword>
+    <keyword>CW</keyword>
+    <keyword>FT8</keyword>
+    <keyword xml:lang="de">Amateurfunk</keyword>
+    <keyword xml:lang="de">Logbuch</keyword>
+    <keyword xml:lang="de">Funk</keyword>
+  </keywords>
+  <url type="homepage">https://github.com/do2ggh/GoGoHam</url>
+  <url type="bugtracker">https://github.com/do2ggh/GoGoHam/issues</url>
+  <url type="vcs-browser">https://github.com/do2ggh/GoGoHam</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Logging in the CQ WW SSB: entry, info box for the other station, log and score</caption>
+      <caption xml:lang="de">Loggen im CQ WW SSB: Eingabe, Infobox zur Gegenstation, Log und Punkte</caption>
+      <image>https://raw.githubusercontent.com/do2ggh/GoGoHam/main/docs/images/gogoham-en.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>German user interface</caption>
+      <caption xml:lang="de">Deutsche Oberfläche</caption>
+      <image>https://raw.githubusercontent.com/do2ggh/GoGoHam/main/docs/images/gogoham-de.png</image>
+    </screenshot>
+  </screenshots>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+  <content_rating type="oars-1.1"/>
+</component>

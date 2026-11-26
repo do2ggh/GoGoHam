@@ -1,0 +1,25 @@
+# Fremder Code wird nicht angenommen (siehe CONTRIBUTING.md): Pull Requests von anderen werden
+# freundlich kommentiert und geschlossen. Es wird kein Code aus dem Pull Request ausgeführt.
+name: Pull Requests schließen
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  close:
+    if: github.event.pull_request.user.login != github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hinweis schreiben und schließen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr comment "$PR" -R "${{ github.repository }}" --body "Danke für deine Mühe! GoGoHam nimmt keinen fremden Programmcode an – das steht in [CONTRIBUTING.md](${{ github.server_url }}/${{ github.repository }}/blob/main/CONTRIBUTING.md). Beschreib deine Idee oder Lösung gern in Worten in einem Issue, dann setze ich sie selbst um. 73!
+
+          *Thanks for your effort! GoGoHam does not accept code from others – see [CONTRIBUTING.md](${{ github.server_url }}/${{ github.repository }}/blob/main/CONTRIBUTING.md). Feel free to describe your idea or fix in words in an issue, and I will implement it myself. 73!*"
+          gh pr close "$PR" -R "${{ github.repository }}"

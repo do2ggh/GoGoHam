@@ -1,0 +1,6 @@
+# Kleine DOK-Beispielliste nur für die Tests (die vollständige Liste ist nicht im Projekt)
+# Format: DOK;Name
+B36;Beispiel-OV
+C01;Beispiel-OV
+H13;Beispiel-OV
+Z12;VFDB

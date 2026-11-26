@@ -1,0 +1,132 @@
+#!/bin/bash
+# GoGoHam-Live-Stick: einen neuen, FRISCHEN Stick aus dem laufenden Stick erstellen (ab 0.10.20).
+# Aufruf (von GoGoHam über pkexec):  gogoham-stick-kopie /dev/sdX
+# Kopiert nur das System (das ursprüngliche Abbild) – keine Logs, Einstellungen oder Passwörter.
+# Danach Datenteil und Austausch-Ordner passend zur Stickgröße, genau wie schreiben.sh.
+#
+# Ausgabe für GoGoHam, je Zeile:
+#   SCHRITT <aushaengen|schreiben|pruefen|aufteilen|einrichten|fertig>
+#   FORTSCHRITT <Byte geschrieben> <Byte gesamt>
+#   TEMPO <MB/s> <kleine Blöcke pro Sekunde>
+#   FEHLER <Kennwort> [Text]     (dann Ende mit Fehlercode)
+set -uo pipefail
+export LC_ALL=C
+LIB=${GOGOHAM_STICK_LIB:-/usr/local/lib/gogoham-stick}
+# shellcheck source=/dev/null
+source "$LIB/aufteilung.sh"
+
+fehler() { echo "FEHLER $*"; exit 1; }
+
+DEV=${1:-}
+[ "$(id -u)" -eq 0 ] || fehler rechte
+[[ "$DEV" =~ ^/dev/[a-z0-9]+$ ]] && [ -b "$DEV" ] || fehler ziel "$DEV"
+
+# ------------------------------------------------------------ Quelle: der laufende Stick
+quelle() {
+    local part pk back
+    part=$(findmnt -nro SOURCE /run/live/medium 2>/dev/null | head -n1)
+    [ -b "$part" ] || return 1
+    # live-boot hängt das System oft über /dev/loopN ein, dahinter steckt der ganze Stick (VM-Test)
+    if [[ "$part" == /dev/loop* ]]; then
+        back=$(cat "/sys/block/${part#/dev/}/loop/backing_file" 2>/dev/null)
+        [ -b "$back" ] || return 1
+        part=$back
+    fi
+    pk=$(lsblk -nro PKNAME "$part" 2>/dev/null | head -n1)
+    if [ -n "$pk" ]; then echo "/dev/$pk"; else echo "$part"; fi
+}
+SRC=$(quelle) || fehler quelle
+[ -b "$SRC" ] || fehler quelle
+
+# Länge des Abbilds aus dem Kopf des Systems (ISO 9660: Blöcke × Blockgröße)
+BLOECKE=$(od -An -tu4 -j $((32768 + 80)) -N4 "$SRC" | tr -d ' ')
+BLOCK=$(od -An -tu2 -j $((32768 + 128)) -N2 "$SRC" | tr -d ' ')
+[ -n "$BLOECKE" ] && [ -n "$BLOCK" ] && [ "$BLOCK" -eq 2048 ] || fehler quelle
+LAENGE=$(( BLOECKE * BLOCK ))
+[ "$LAENGE" -gt $((500 * 1024 * 1024)) ] && [ "$LAENGE" -lt $(( DATEN_START * 512 )) ] || fehler quelle
+
+# ------------------------------------------------------------ Ziel prüfen (auch wenn GoGoHam das schon tat)
+[ "$(readlink -f "$DEV")" != "$(readlink -f "$SRC")" ] || fehler eigener
+[ "$(lsblk -dnro TYPE "$DEV")" = disk ] || fehler ziel "$DEV"
+[ "$(lsblk -dnro TRAN "$DEV")" = usb ] || fehler kein_usb
+if lsblk -nrpo MOUNTPOINTS "$DEV" | grep -qE '^(/|/home|/boot|/boot/efi|/run/live/.*)$'; then
+    fehler eigener
+fi
+GROESSE=$(lsblk -bdno SIZE "$DEV")
+passt_auf "$GROESSE" || fehler zu_klein "$GROESSE"
+TAUSCH=$(tausch_groesse "$GROESSE")
+
+# ------------------------------------------------------------ 1. aushängen
+echo "SCHRITT aushaengen"
+for p in $(lsblk -nrpo NAME "$DEV" | tail -n +2) "$DEV"; do umount "$p" 2>/dev/null || true; done
+if lsblk -nrpo MOUNTPOINTS "$DEV" | grep -q .; then fehler belegt; fi
+wipefs -aq "$DEV" >/dev/null 2>&1 || true
+
+# ------------------------------------------------------------ 2. System schreiben
+echo "SCHRITT schreiben"
+t0=$(date +%s.%N)
+dd if="$SRC" of="$DEV" bs=4M count="$LAENGE" iflag=count_bytes oflag=direct conv=fsync \
+    status=progress 2>&1 | tr '\r' '\n' | while read -r n rest; do
+        [[ "$n" =~ ^[0-9]+$ ]] && [[ "$rest" == bytes* || "$rest" == Bytes* ]] && echo "FORTSCHRITT $n $LAENGE"
+    done
+[ "${PIPESTATUS[0]}" -eq 0 ] || fehler schreiben
+sync
+t1=$(date +%s.%N)
+echo "FORTSCHRITT $LAENGE $LAENGE"
+SEQ=$(mb_pro_s "$LAENGE" "$(awk -v a="$t0" -v b="$t1" 'BEGIN {print b - a}')")
+
+# ------------------------------------------------------------ 3. prüfen (vor jeder Änderung an der Tabelle)
+echo "SCHRITT pruefen"
+echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
+cmp -s -n "$LAENGE" "$SRC" "$DEV" || fehler pruefen
+
+# ------------------------------------------------------------ 4. Datenteil und Austausch-Ordner anlegen
+echo "SCHRITT aufteilen"
+# Die mitkopierte Tabelle gehört zum laufenden Stick (dessen Größe, dessen Teile 4 und 5) – auf
+# einem kleineren Stick versteht sfdisk sie nicht mehr. Deshalb: Teile 1–3 aus der Tabelle des
+# laufenden Sticks frisch und passend zu diesem Stick schreiben (gleiche Kennungen), den
+# Startcode für ältere Rechner (erste 440 Byte) dabei bewahren, dann wie schreiben.sh aufteilen.
+neue_tabelle() {
+    local boot rc
+    boot=$(mktemp)
+    dd if="$DEV" of="$boot" bs=440 count=1 status=none
+    sfdisk -d "$SRC" 2>/dev/null \
+        | awk '/^last-lba:/ {next} /^\/|^[^:]*: start=/ { if (++n > 3) next } {print}' \
+        | sfdisk -q --no-reread --wipe never "$DEV" >/dev/null 2>&1
+    rc=$?
+    dd if="$boot" of="$DEV" bs=440 count=1 conv=notrunc,fsync status=none
+    rm -f "$boot"
+    return $rc
+}
+neue_tabelle || fehler aufteilen
+aufteilen "$DEV" "$TAUSCH" >/dev/null 2>&1 || fehler aufteilen
+blockdev --rereadpt "$DEV" 2>/dev/null || partx -u "$DEV" 2>/dev/null || true
+udevadm settle
+P4=$(lsblk -nrpo NAME "$DEV" | sed -n 5p)
+P5=$(lsblk -nrpo NAME "$DEV" | sed -n 6p)
+[ -b "$P4" ] && [ -b "$P5" ] || fehler aufteilen
+
+# Tempo bei vielen kleinen Schreibzugriffen (so arbeitet das System im Betrieb) – höchstens 30 s
+t0=$(date +%s.%N)
+if timeout 30 dd if=/dev/zero of="$P4" bs=4k count=64 oflag=direct,dsync status=none; then
+    t1=$(date +%s.%N)
+    KLEIN=$(awk -v a="$t0" -v b="$t1" 'BEGIN { s = b - a; if (s <= 0) s = 0.001; printf "%d", 64 / s }')
+else
+    KLEIN=2
+fi
+
+echo "SCHRITT einrichten"
+mkfs.ext4 -q -F -L GGH-DATEN -E lazy_itable_init=0,lazy_journal_init=0 "$P4" >/dev/null 2>&1 \
+    || fehler einrichten
+daten_schonen "$P4"
+mkfs.exfat -q -L GoGoHam "$P5" >/dev/null 2>&1 || fehler einrichten
+tmp=$(mktemp -d)
+mount "$P4" "$tmp" || fehler einrichten
+echo "/ union" > "$tmp/persistence.conf"
+umount "$tmp"
+rmdir "$tmp"
+sync
+# KDE soll die neuen Teile nicht gleich einhängen – der Stick kann sofort ab
+for p in "$P4" "$P5"; do umount "$p" 2>/dev/null || true; done
+echo "TEMPO $SEQ $KLEIN"
+echo "SCHRITT fertig"

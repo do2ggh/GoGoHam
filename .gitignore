@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.ggh
+*.klog
+
+# Private Arbeitsnotizen – nie hochladen
+CLAUDE.md
+docs/VERLAUF.md
+
+# Live-Stick (stick/): Bau-Zwischenspeicher, Abbilder, Testmaschine – viele GB, nie hochladen
+stick/arbeit/
+stick/ausgabe/
+stick/probe/
+stick/fern/
+stick/vm/*.img
+stick/vm/*.iso
+stick/vm/*.png
+stick/vm/*.fd
+stick/vm/*.sock
+stick/vm/*.pid
+stick/vm/gast.txt
+stick/vm/www/

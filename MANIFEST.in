@@ -1,0 +1,10 @@
+# Quellpaket (sdist): alles, was die Distributionen zum Bauen und Testen brauchen
+include LICENSE ADDITIONAL-TERMS.md THIRD-PARTY.md CHANGELOG.md CONTRIBUTING.md
+include README.md README.en.md pytest.ini install.sh uninstall.sh
+graft data
+graft tests
+graft tools
+graft docs
+exclude CLAUDE.md docs/VERLAUF.md
+prune stick
+global-exclude __pycache__ *.py[co] *.ggh

@@ -1,0 +1,70 @@
+{
+  "format": 10,
+  "revision": 2,
+  "id": "darc-vhf",
+  "name": "DARC VHF-/UHF-/SHF-Wettbewerb (März, Mai, Juli)",
+  "rules_url": "https://www.darc.de/der-club/referate/conteste/ukw/tnukwcontest000/tnukwcontest00700/",
+  "rules_checked": "2026-11",
+  "submit": {"upload_url": "https://dxhf2.darc.de/~ukwlog/upload.cgi?form=referat&lang=de", "deadline": {"days": 7, "time": "23:59"}, "note": {"de": "Jede Band-Datei einzeln hochladen (EDI).", "en": "Upload each band file separately (EDI)."}, "checked": "2026-11"},
+  "schedule": {
+    "weekend": "saturday",
+    "nth": 1,
+    "months": [
+      3,
+      5,
+      7
+    ],
+    "start_hour": 14,
+    "hours": 24
+  },
+  "bands": [
+    "2",
+    "70cm",
+    "23cm",
+    "13cm",
+    "9cm",
+    "6cm",
+    "3cm",
+    "1.25cm",
+    "6mm",
+    "4mm",
+    "2.5mm",
+    "2mm",
+    "1mm",
+    "submm"
+  ],
+  "modes": [
+    "PH",
+    "CW"
+  ],
+  "dupe": "band",
+  "serial_per_band": true,
+  "exchange": [
+    {
+      "field": "rst"
+    },
+    {
+      "field": "serial_grid6"
+    }
+  ],
+  "points": {
+    "type": "km"
+  },
+  "multipliers": [],
+  "score": "points_sum",
+  "log_format": "edi",
+  "columns": [
+    "nr",
+    "utc",
+    "band",
+    "mode",
+    "khz",
+    "call",
+    "rst_s",
+    "ex_s",
+    "rst_r",
+    "ex_r",
+    "km",
+    "pts"
+  ]
+}

@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gogoham"
+dynamic = ["version"]          # steht nur in gogoham/__init__.py
+description = "Contest logger for Linux – fast entry, live dupe and live score"
+readme = "README.en.md"
+license = "GPL-3.0-only"
+license-files = ["LICENSE", "ADDITIONAL-TERMS.md", "THIRD-PARTY.md"]
+authors = [{ name = "Franz, DO2GGH", email = "do2ggh.de@gmail.com" }]
+requires-python = ">=3.12"
+dependencies = ["PySide6>=6.5", "numpy"]
+keywords = ["ham radio", "amateur radio", "contest", "logger", "hamlib"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: German",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Communications :: Ham Radio",
+]
+
+[project.urls]
+Homepage = "https://github.com/do2ggh/GoGoHam"
+Issues = "https://github.com/do2ggh/GoGoHam/issues"
+
+[project.gui-scripts]
+gogoham = "gogoham.__main__:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "gogoham.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["gogoham*"]
+
+[tool.setuptools.package-data]
+gogoham = ["rules/*.json", "help/*", "assets/*", "i18n/*.json", "dok_ov.txt",
+           "_vendor/segno/LICENSE", "_vendor/segno/README.GoGoHam"]
+
+[tool.setuptools.data-files]
+"share/applications" = ["data/gogoham.desktop"]
+"share/metainfo" = ["data/io.github.do2ggh.GoGoHam.metainfo.xml"]
+"share/icons/hicolor/16x16/apps" = ["data/icons/hicolor/16x16/apps/gogoham.png"]
+"share/icons/hicolor/22x22/apps" = ["data/icons/hicolor/22x22/apps/gogoham.png"]
+"share/icons/hicolor/24x24/apps" = ["data/icons/hicolor/24x24/apps/gogoham.png"]
+"share/icons/hicolor/32x32/apps" = ["data/icons/hicolor/32x32/apps/gogoham.png"]
+"share/icons/hicolor/48x48/apps" = ["data/icons/hicolor/48x48/apps/gogoham.png"]
+"share/icons/hicolor/64x64/apps" = ["data/icons/hicolor/64x64/apps/gogoham.png"]
+"share/icons/hicolor/128x128/apps" = ["data/icons/hicolor/128x128/apps/gogoham.png"]
+"share/icons/hicolor/256x256/apps" = ["data/icons/hicolor/256x256/apps/gogoham.png"]
+"share/icons/hicolor/512x512/apps" = ["data/icons/hicolor/512x512/apps/gogoham.png"]

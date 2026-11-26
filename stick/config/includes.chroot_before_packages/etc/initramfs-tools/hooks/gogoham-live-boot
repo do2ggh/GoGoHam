@@ -1,0 +1,40 @@
+#!/bin/sh
+# GoGoHam-Live-Stick: live-boot überspringt beim Suchen des Datenteils den ganzen Stick, wenn
+# das Abbild direkt auf dem Stick liegt (/dev/sdX statt /dev/sdX1) – damit auch den Datenteil.
+# Hier: nur noch genau die Geräte überspringen, auf denen das Live-System liegt.
+# Außerdem: Das Abbild (iso9660) über ein Loop-Gerät einhängen. Direkt eingehängt belegt es den
+# ganzen Stick, und Linux verweigert dann das Einhängen des Datenteils (EBUSY, ohne Meldung).
+# Und: Bau-Stempel + Werkzeuge für gogoham-reset. Nach einem neuen Abbild (Stick aktualisieren)
+# zeigen die im Datenteil gemerkten Verweise („trusted.overlay.origin“) auf falsche Dateien
+# (squashfs-Dateihandles = Inode-Nummern) → apt: „Veraltete Dateizugriffsnummer“ (ESTALE),
+# dmesg: „overlayfs: invalid origin“. gogoham-reset entfernt sie, wenn der Stempel neu ist.
+PREREQ="live"
+prereqs() { echo "$PREREQ"; }
+case "$1" in
+    prereqs) prereqs; exit 0 ;;
+esac
+for f in "$DESTDIR/usr/lib/live/boot/9990-misc-helpers.sh" "$DESTDIR/lib/live/boot/9990-misc-helpers.sh"; do
+    [ -f "$f" ] && [ ! -L "$f" ] || continue
+    sed -i 's/^\(\t*\)if is_in_space_sep_list ${fulldevname} ${black_listed_devices} || \\$/\1if \\/' "$f"
+    grep -q 'if is_in_space_sep_list ${fulldevname} ${black_listed_devices}' "$f" && \
+        echo "W: gogoham-live-boot: Stelle 1 in live-boot nicht gefunden" >&2
+    sed -i 's/mount -t ${fstype} -o ro,noatime "${devname}" ${mountpoint} || continue/mount -t ${fstype} -o ro,noatime$([ "${fstype}" = iso9660 ] \&\& echo ,loop) "${devname}" ${mountpoint} || continue/' "$f"
+    grep -q 'ro,noatime$(\[ "${fstype}" = iso9660 \]' "$f" || \
+        echo "W: gogoham-live-boot: Stelle 2 in live-boot nicht gefunden" >&2
+done
+. /usr/share/initramfs-tools/hook-functions
+copy_exec /usr/bin/setfattr /usr/bin
+copy_exec /usr/bin/find /usr/bin
+copy_exec /usr/bin/xargs /usr/bin
+# gogoham-einrichten: Datenteil + Austausch-Ordner beim ersten Start anlegen (ab 0.10.22)
+# Eigener Ordner: im Startsystem sind mke2fs, blkid … sonst oft BusyBox-Fassungen (ohne ext4,
+# ohne -p/-s/-o) – copy_exec überschreibt vorhandene Dateien nicht (VM-Test 17./18. Bau).
+for b in /usr/sbin/sfdisk /usr/sbin/blkid /usr/sbin/blockdev /usr/bin/partx /usr/sbin/mke2fs \
+         /usr/sbin/mkfs.exfat /usr/sbin/debugfs; do
+    # voller Zielpfad: ohne ihn nimmt copy_exec /usr/lib/gogoham als DATEINAMEN (19. Bau)
+    [ -x "$b" ] && copy_exec "$b" "/usr/lib/gogoham/${b##*/}"
+done
+[ -f /etc/mke2fs.conf ] && mkdir -p "$DESTDIR/etc" && cp /etc/mke2fs.conf "$DESTDIR/etc/"
+mkdir -p "$DESTDIR/etc"
+{ date -u +%Y%m%d%H%M%S; cat /proc/sys/kernel/random/uuid; } | tr '\n' ' ' > "$DESTDIR/etc/gogoham-build"
+exit 0

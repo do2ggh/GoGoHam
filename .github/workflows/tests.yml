@@ -1,0 +1,50 @@
+# Bei jedem Hochladen: alle Tests mit mehreren Python-Versionen, dann Paket bauen und prüfen.
+name: Tests
+
+on:
+  push:
+    branches: ["**"]        # nicht noch einmal für jede Versionsmarke
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13", "3.14"]   # Ubuntu, Debian 13, Leap 16, Fedora, Arch
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Systempakete (Hamlib, Bibliotheken für Qt ohne Bildschirm)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libhamlib-utils libegl1 libgl1 \
+            libxkbcommon0 libfontconfig1 libdbus-1-3 libpulse0 libxcb-cursor0 fonts-noto-core
+      - name: Python-Pakete
+        run: python -m pip install --upgrade pip && python -m pip install PySide6 numpy pytest pyyaml build
+      - name: Tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest -q
+      - name: Paket bauen und prüfen
+        run: |
+          python -m build
+          python -m pip install dist/*.whl
+          cd /tmp && python - <<'PY'
+          import importlib.metadata as md, pathlib, gogoham
+          root = pathlib.Path(gogoham.__file__).parent
+          assert md.version("gogoham") == gogoham.__version__
+          assert len(list((root / "rules").glob("*.json"))) >= 50
+          assert (root / "help" / "handbuch.html").is_file()
+          assert (root / "assets" / "world.json").is_file()
+          assert (root / "i18n" / "en.json").is_file()
+          assert any(e.name == "gogoham" for e in md.entry_points(group="gui_scripts"))
+          print("Paket", gogoham.__version__, "ok")
+          PY

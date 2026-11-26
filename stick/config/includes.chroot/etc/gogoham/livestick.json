@@ -1,0 +1,7 @@
+{
+  "data": "/",
+  "exchange": "/home/gogoham/Austausch",
+  "reset": "/usr/local/sbin/gogoham-stick-reset",
+  "timezone": "/usr/local/sbin/gogoham-stick-zeitzone",
+  "copy": "/usr/local/sbin/gogoham-stick-kopie"
+}

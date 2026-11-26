@@ -1,0 +1,47 @@
+name: "Fehler melden · Report a bug"
+description: "Etwas funktioniert nicht wie beschrieben · Something does not work as described"
+labels: ["fehler"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deine Meldung! Bitte vorher kurz nachsehen, ob es den Fehler schon als Issue gibt.
+        **Keine Passwörter einfügen.** Deutsch oder Englisch.
+
+        *Thanks for reporting! Please check first whether the bug has already been reported.
+        **Do not paste passwords.** German or English.*
+  - type: textarea
+    id: was
+    attributes:
+      label: "Was ist passiert? · What happened?"
+      description: "Was hast du gemacht, was ist passiert? · What did you do, what happened?"
+    validations:
+      required: true
+  - type: textarea
+    id: erwartet
+    attributes:
+      label: "Was hättest du erwartet? · What did you expect?"
+    validations:
+      required: true
+  - type: textarea
+    id: schritte
+    attributes:
+      label: "Wie lässt sich der Fehler wiederholen? · How can the bug be reproduced?"
+      placeholder: |
+        1. Datei → Neues Contest-Log … / File → New contest log …
+        2. …
+  - type: input
+    id: contest
+    attributes:
+      label: "Contest und Funkgerät · Contest and radio"
+      placeholder: "z. B. / e.g. CQ WW SSB, IC-7300"
+  - type: textarea
+    id: bericht
+    attributes:
+      label: "Fehlerbericht aus GoGoHam · Bug report from GoGoHam"
+      description: |
+        Im Programm: Hilfe → Fehlerbericht erstellen … → Kopieren, dann hier einfügen.
+        In the program: Help → Create bug report … → Copy, then paste here.
+      render: text
+    validations:
+      required: true

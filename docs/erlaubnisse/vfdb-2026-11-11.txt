@@ -1,0 +1,44 @@
+Erlaubnis des VFDB e.V. zur Weitergabe der Z-DOK-Liste (gogoham/dok_ov.txt, Einträge Z..)
+Eingegangen: 2026-11-11 bei gogoham@bluemailx.com
+(Original-E-Mail liegt im Postfach von DO2GGH; Name des Absenders hier weggelassen)
+Hinweis (2026-11-12): Die Projekt-Adresse ist seitdem do2ggh.de@gmail.com; der Nachweis oben bleibt unverändert.
+
+--- Antwort ---
+Guten Morgen, gerne kannst du die Daten so verwenden.
+
+73
+
+[Vorsitzender des VFDB e.V.; Name im Original-Nachweis]
+
+--- Anfrage ---
+Betreff: Bitte um Erlaubnis: DOK-Liste (Z-DOKs) in einem freien Contest-Logger
+Datum: 2026-11-08 02:02
+Von: gogoham@bluemailx.com
+An: info@vfdb.org
+
+Sehr geehrte Damen und Herren,
+
+ich entwickle in meiner Freizeit „GoGoHam“, einen kostenlosen
+Contest-Logger für Linux. Er soll demnächst als freie Software unter
+der GPL-3.0 veröffentlicht werden. Für die DARC-Conteste prüft
+GoGoHam den empfangenen DOK, also auch die Z-DOKs der VFDB, und zeigt
+den Namen des Orts- bzw. Bezirksverbands an.
+
+Dafür würde ich gern eine Liste mitliefern, die ich aus Ihrer Seite
+„Bezirks-und Ortsverbände“ zusammengestellt habe. Sie enthält
+nur den DOK und den Namen, z. B. „Z01;Braunschweig“,
+insgesamt 85 Einträge. Keine Namen von Personen, keine Rufzeichen und
+keine Adressen. Als Quelle wird die VFDB genannt.
+Ihre Inhalte stehen unter CC BY-NC-SA 3.0. Weil GoGoHam später auch
+über Linux-Distributionen verteilt werden soll, passen die
+Bedingungen „nicht kommerziell“ und „gleiche Lizenz“ leider
+nicht dazu.
+Deshalb meine Frage: Darf ich diese kurze Liste ohne diese beiden
+Einschränkungen weitergeben, gern mit Pflicht zur Quellenangabe?
+
+Falls das nicht möglich ist, ist das selbstverständlich in Ordnung.
+Dann lädt GoGoHam die Liste nur auf Wunsch des Nutzers direkt von
+Ihrer Seite.
+
+Vielen Dank und vy 73
+Franz, DO2GGH

@@ -1,0 +1,10 @@
+# GoGoHam (ab 0.10.25): USB-Seriell-Geräte – Funkgerät-Kabel, GPS-Empfänger, WinKeyer,
+# Rotor-Steuerung – gehören dem Benutzer, der gerade am Rechner angemeldet ist.
+# Ohne Gruppe (uucp/dialout) und ohne neu anmelden; gilt auch beim Einstecken im Betrieb.
+SUBSYSTEM=="tty", KERNEL=="ttyUSB[0-9]*|ttyACM[0-9]*", TAG+="uaccess"
+
+# GPS-Empfänger: ModemManager soll sie nicht für ein Handy-Modem halten (er schickt sonst
+# Befehle hin und hält den Anschluss fest).
+SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="1546", ENV{ID_MM_DEVICE_IGNORE}="1"
+SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0e8d", ENV{ID_MODEL_ID}=="3329", ENV{ID_MM_DEVICE_IGNORE}="1"
+SUBSYSTEM=="tty", ENV{ID_MODEL}=="*GPS*|*Gps*|*gps*|*GNSS*|*Gnss*|*gnss*", ENV{ID_MM_DEVICE_IGNORE}="1"

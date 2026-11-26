@@ -1,0 +1,26 @@
+# Neue Versionsmarke (z. B. v0.9.3) -> der openSUSE Build Service holt den Quelltext und baut
+# die Pakete für alle Distributionen neu. Braucht das Geheimnis OBS_TOKEN (osc token, runservice).
+name: Pakete bauen (OBS)
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  obs:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: OBS anstoßen
+        env:
+          OBS_TOKEN: ${{ secrets.OBS_TOKEN }}
+        run: |
+          if [ -z "$OBS_TOKEN" ]; then
+            echo "::warning::Geheimnis OBS_TOKEN fehlt – OBS wird nicht angestoßen."
+            exit 0
+          fi
+          curl -fsS -X POST -H "Authorization: Token $OBS_TOKEN" \
+            "https://api.opensuse.org/trigger/runservice?project=home:Franz&package=gogoham"

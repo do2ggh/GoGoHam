@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Exchange folder
+Name[de]=Austausch-Ordner
+Comment=Left: exchange folder (readable on Windows too), right: choose any drive
+Comment[de]=Links der Austausch-Ordner (auch unter Windows lesbar), rechts ein beliebiges Laufwerk
+Icon=folder-publicshare
+Exec=sh -c 'dolphin --new-window --split "$HOME/Austausch" "$HOME"'
+Terminal=false

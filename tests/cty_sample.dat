@@ -1,0 +1,44 @@
+Fed. Rep. of Germany:     14:  28:  EU:   51.00:   -10.00:    -1.0:  DL:
+    DA,DB,DC,DD,DE,DF,DG,DH,DI,DJ,DK,DL,DM,DN,DO,DP,DQ,DR,Y2,Y3,Y4,Y5,Y6,
+    Y7,Y8,Y9,=DL0SPECIAL(15);
+Austria:                  15:  28:  EU:   47.33:   -13.33:    -1.0:  OE:
+    OE;
+Netherlands:              14:  27:  EU:   52.28:    -5.47:    -1.0:  PA:
+    PA,PB,PC,PD,PE,PF,PG,PH,PI;
+England:                  14:  27:  EU:   52.77:     1.47:     0.0:  G:
+    2E,G,M;
+Shetland Islands:         14:  27:  EU:   60.50:     1.50:     0.0:  *GM/s:
+    =GB2QM,=GM3ZET;
+Scotland:                 14:  27:  EU:   56.82:     4.18:     0.0:  GM:
+    2M,GM,MM;
+European Russia:          16:  29:  EU:   53.65:   -41.37:    -4.0:  UA:
+    R,U,=VER20261028;
+Asiatic Russia:           17:  30:  AS:   55.88:   -84.08:    -7.0:  UA9:
+    R0,R8,R9,U0,U8,U9,UA0,UA8,UA9;
+Japan:                    25:  45:  AS:   36.40:  -138.38:    -9.0:  JA:
+    7J,7K,8J,JA,JE,JF,JG,JH,JI,JJ,JK,JL,JM,JN,JO,JP,JQ,JR,JS;
+United States:            05:  08:  NA:   37.53:    91.67:     5.0:  K:
+    AA,K,N,W,K6(3)[6],W6(3)[6],N6(3)[6];
+Canada:                   05:  09:  NA:   44.35:    78.75:     5.0:  VE:
+    VA,VE,VO,VY;
+China:                    24:  44:  AS:   36.00:  -102.00:    -8.0:  BY:
+    3H,3S,B;
+Hawaii:                   31:  61:  OC:   21.12:   157.48:    10.0:  KH6:
+    AH6,KH6,NH6,WH6;
+Brazil:                   11:  15:  SA:  -10.00:    53.00:     3.0:  PY:
+    PP,PQ,PR,PS,PT,PU,PV,PW,PX,PY,ZV,ZW,ZX,ZY,ZZ;
+Australia:                30:  59:  OC:  -23.70:  -132.33:   -10.0:  VK:
+    AX,VI,VJ,VK,VL,AX4[55],VI4[55],VJ4[55],VK4[55],VL4[55],=VI9POL,
+    =VK6TX[55];
+Hungary:                  15:  28:  EU:   47.12:   -19.28:    -1.0:  HA:
+    HA,HG;
+Czech Republic:           15:  28:  EU:   50.00:   -16.00:    -1.0:  OK:
+    OK,OL;
+Slovak Republic:          15:  28:  EU:   49.00:   -20.00:    -1.0:  OM:
+    OM;
+Belgium:                  14:  27:  EU:   50.70:    -4.85:    -1.0:  ON:
+    ON,OO,OP,OQ,OR,OS,OT;
+Poland:                   15:  28:  EU:   52.28:   -18.67:    -1.0:  SP:
+    3Z,HF,SN,SO,SP,SQ,SR;
+Belarus:                  16:  29:  EU:   54.00:   -28.00:    -2.0:  EU:
+    EU,EV,EW;

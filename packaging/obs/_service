@@ -1,0 +1,21 @@
+<!-- OBS holt den Quelltext selbst von GitHub (neueste Versionsmarke vX.Y.Z) -->
+<services>
+  <service name="obs_scm">
+    <param name="url">https://github.com/do2ggh/GoGoHam.git</param>
+    <param name="scm">git</param>
+    <param name="revision">main</param>
+    <param name="versionformat">@PARENT_TAG@</param>
+    <param name="versionrewrite-pattern">v(.*)</param>
+    <param name="filename">gogoham</param>
+    <param name="exclude">.github</param>
+    <param name="exclude">stick</param>
+  </service>
+  <service name="tar">
+    <param name="obsinfo">gogoham.obsinfo</param>
+  </service>
+  <service name="recompress">
+    <param name="file">*.tar</param>
+    <param name="compression">gz</param>
+  </service>
+  <service name="set_version"/>
+</services>

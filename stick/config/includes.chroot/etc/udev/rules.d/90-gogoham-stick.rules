@@ -1,0 +1,5 @@
+# GoGoHam-Live-Stick: die eigenen Teile des Sticks (Austausch-Ordner, Datenteil) nicht als
+# „Wechselmedium“ mit Auswerfen-Knopf zeigen – sonst hängt man den Austausch-Ordner versehentlich aus.
+# Windows-Festplatten und andere Sticks bleiben sichtbar.
+ENV{ID_FS_LABEL}=="GoGoHam", ENV{UDISKS_IGNORE}="1"
+ENV{ID_FS_LABEL}=="GGH-DATEN", ENV{UDISKS_IGNORE}="1"

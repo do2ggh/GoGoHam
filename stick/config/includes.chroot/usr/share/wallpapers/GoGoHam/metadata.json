@@ -1,0 +1,8 @@
+{
+  "KPlugin": {
+    "Id": "GoGoHam",
+    "Name": "GoGoHam",
+    "Authors": [{"Name": "DO2GGH"}],
+    "License": "GPL-3.0-only"
+  }
+}

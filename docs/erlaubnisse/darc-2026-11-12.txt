@@ -1,0 +1,45 @@
+Erlaubnis des DARC e.V. zur Weitergabe der DOK-Liste (gogoham/dok_ov.txt, Einträge A..Y)
+Weitergegeben: 2026-11-12, Antwort an gogoham@bluemailx.com auf die Anfrage vom 2026-11-08
+Hinweis (2026-11-12): Die Projekt-Adresse ist seitdem do2ggh.de@gmail.com; der Nachweis oben bleibt unverändert.
+(Original-E-Mail liegt im Postfach von DO2GGH)
+
+--- Antwort ---
+Guten Tag Franz,
+
+nach Rücksprache mit unserem Vorsitzenden ist eine Verwendung der DOK-Liste unkritisch, das diese
+Daten ja eh auf der Homepage vorhanden sind. Daher sind wir damit einverstanden.
+
+Mit freundlichen Grüßen
+Sekretariat Verbandsbetreuung
+Deutscher Amateur-Radio-Club e. V., Baunatal
+darc@darc.de · https://www.darc.de
+
+--- Anfrage ---
+Datum: 2026-11-08 02:01
+Von: gogoham@bluemailx.com
+An: darc@darc.de
+
+Sehr geehrte Damen und Herren,
+
+ich entwickle in meiner Freizeit „GoGoHam“, einen kostenlosen Contest-Logger für Linux. Er soll
+demnächst als freie Software unter der GPL-3.0 veröffentlicht werden. Für die DARC-Conteste
+(z. B. WAG, DARC 10 m, Fieldday) prüft GoGoHam den empfangenen DOK und zeigt den Namen des
+Ortsverbands an.
+
+Dafür würde ich gern eine Liste mitliefern, die ich aus Ihrer Seite „Distrikte und Ortsverbände“
+(darc.de/der-club/distrikte/) zusammengestellt habe. Sie enthält nur den DOK und den Namen des
+Ortsverbands, z. B. „B13;Schwabach-Roth“, insgesamt 899 Einträge. Keine Namen von Personen, keine
+Adressen und keine E-Mail-Adressen. Als Quelle wird der DARC genannt.
+
+Darf ich diese Liste mit dem Programm weitergeben? Weil GoGoHam später auch über
+Linux-Distributionen verteilt werden soll, wäre eine Erlaubnis ohne Einschränkung auf
+nicht-kommerzielle Nutzung hilfreich, gern mit Pflicht zur Quellenangabe.
+
+Falls das nicht möglich ist, ist das selbstverständlich in Ordnung. Dann lädt GoGoHam die Liste
+nur auf Wunsch des Nutzers direkt von Ihrer Seite.
+
+Falls diese Anfrage bei einer anderen Stelle besser aufgehoben ist (z. B. beim Referat DX und
+HF-Funksport), freue ich mich über einen Hinweis.
+
+Vielen Dank und vy 73
+Franz, DO2GGH

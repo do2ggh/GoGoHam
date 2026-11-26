@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=GoGoHam
+Exec=gogoham
+Icon=gogoham
+Terminal=false
+X-KDE-autostart-after=panel

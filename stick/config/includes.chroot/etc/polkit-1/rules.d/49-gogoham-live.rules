@@ -1,0 +1,6 @@
+// GoGoHam-Live-Stick: keine Passwortabfragen (es gibt kein Passwort)
+polkit.addRule(function(action, subject) {
+    if (subject.isInGroup("sudo")) {
+        return polkit.Result.YES;
+    }
+});

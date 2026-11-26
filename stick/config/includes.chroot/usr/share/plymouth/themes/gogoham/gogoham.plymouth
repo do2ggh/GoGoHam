@@ -1,0 +1,33 @@
+[Plymouth Theme]
+Name=GoGoHam
+Description=GoGoHam-Live-Stick: Logo mit Ladeanzeige
+ModuleName=two-step
+
+[two-step]
+Font=Noto Sans 12
+TitleFont=Noto Sans 20
+ImageDir=/usr/share/plymouth/themes/gogoham
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.75
+TitleHorizontalAlignment=.5
+TitleVerticalAlignment=.382
+HorizontalAlignment=.5
+VerticalAlignment=.75
+WatermarkHorizontalAlignment=.5
+WatermarkVerticalAlignment=.45
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x0f1726
+BackgroundEndColor=0x0f1726
+ProgressBarBackgroundColor=0x0f1726
+ProgressBarForegroundColor=0xaebbd0
+MessageBelowAnimation=true
+
+[boot-up]
+UseEndAnimation=false
+
+[shutdown]
+UseEndAnimation=false
+
+[reboot]
+UseEndAnimation=false

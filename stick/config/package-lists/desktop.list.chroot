@@ -1,0 +1,65 @@
+# Grundsystem für den Live-Stick
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+sudo
+locales
+keyboard-configuration
+console-setup
+# KDE Plasma (schlank)
+kde-plasma-desktop
+sddm
+sddm-theme-breeze
+plasma-nm
+plasma-pa
+konsole
+dolphin
+kate
+ark
+okular
+gwenview
+kde-spectacle
+systemsettings
+firefox-esr
+firefox-esr-l10n-de
+network-manager
+pipewire-audio
+bluez
+# Dateisysteme (Austausch-Ordner, fremde Laufwerke)
+exfatprogs
+ntfs-3g
+dosfstools
+e2fsprogs
+# „Neuen Stick erstellen“: sfdisk (Teile anlegen)
+fdisk
+# Treiber und Firmware für möglichst viele Rechner
+firmware-linux
+firmware-linux-nonfree
+firmware-misc-nonfree
+firmware-amd-graphics
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-brcm80211
+firmware-intel-sound
+firmware-sof-signed
+intel-microcode
+amd64-microcode
+# GoGoHam braucht (das Paket selbst liegt in packages.chroot)
+pkexec
+polkitd
+libhamlib-utils
+speech-dispatcher
+python3-pyside6.qttexttospeech
+curl
+ca-certificates
+busybox
+# Startbild
+plymouth
+plymouth-themes
+fonts-noto-core
+attr
+chrony
+flatpak
+qt6-translations-l10n

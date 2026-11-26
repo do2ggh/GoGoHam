@@ -1,0 +1,15 @@
+#!/bin/sh
+# GoGoHam-Live-Stick: auf Werkseinstellungen zurücksetzen.
+# Markiert den Datenteil; beim nächsten Start leert ihn die initramfs (gogoham-reset),
+# bevor er benutzt wird. Der Austausch-Ordner bleibt unberührt.
+set -e
+dev=/dev/disk/by-label/GGH-DATEN
+[ -e "$dev" ] || { echo "Kein Datenteil (GGH-DATEN) gefunden" >&2; exit 1; }
+mnt=$(findmnt -rno TARGET -S LABEL=GGH-DATEN | head -n1)
+if [ -z "$mnt" ]; then
+    mnt=$(mktemp -d)
+    mount "$dev" "$mnt"
+fi
+touch "$mnt/GOGOHAM-ZURUECKSETZEN"
+sync
+systemctl reboot

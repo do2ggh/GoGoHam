@@ -1,0 +1,6 @@
+segno 1.6.6 (https://github.com/heuer/segno), BSD-3-Clause, (c) 2016-2025 Lars Heuer.
+Unverändert mitgeliefert für die QR-Codes im Contest-Kalender (ab GoGoHam 0.10.15), damit sie auf
+jedem System ohne Nachinstallieren funktionieren. Quelle: segno-1.6.6.tar.gz von PyPI
+(sha256 e60933afc4b52137d323a4434c8340e0ce1e58cec71439e46680d4db188f11b3).
+Nur die nötigen Module (ohne cli.py, helpers.py, Typ-Dateien). Einzige Änderung: in utils.py
+„from segno import encoder“ → „from . import encoder“.

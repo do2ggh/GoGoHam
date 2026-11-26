@@ -1,0 +1,35 @@
+# GoGoHam – Contest-Logger für Linux (Arch, Garuda, Manjaro)
+# Maintainer: Franz, DO2GGH <do2ggh.de@gmail.com>
+pkgname=gogoham
+pkgver=0.9.2
+pkgrel=1
+pkgdesc="Contest logger for Linux with live dupe check and live score"
+arch=('any')
+url="https://github.com/do2ggh/GoGoHam"
+license=('GPL-3.0-only')
+# qt6-svg: bei Arch nur optional für pyside6, GoGoHam braucht es (Symbole, Karte) – Pakettest 2026-11-13
+depends=('python' 'pyside6' 'qt6-multimedia' 'qt6-multimedia-ffmpeg' 'qt6-svg' 'python-numpy' 'hamlib')
+optdepends=('qt6-speech: Ansagen (Sprachausgabe)'
+            'speech-dispatcher: Ansagen für sehbehinderte Funkamateure'
+            'qt6-translations: OK/Abbrechen usw. in der eingestellten Sprache')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  python -c "import sys; sys.path.insert(0, '.'); import gogoham, pathlib; r = pathlib.Path(gogoham.__file__).parent; assert len(list((r / 'rules').glob('*.json'))) >= 50"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 ADDITIONAL-TERMS.md THIRD-PARTY.md -t "$pkgdir/usr/share/licenses/$pkgname/"
+  # 0.10.25: USB-Freigabe (uaccess) – Funkgerät-Kabel, GPS, WinKeyer ohne Gruppe nutzbar
+  install -Dm644 gogoham/assets/70-gogoham.rules "$pkgdir/usr/lib/udev/rules.d/70-gogoham.rules"
+}
