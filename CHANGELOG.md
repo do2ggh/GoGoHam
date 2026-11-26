@@ -4,6 +4,13 @@ Was in jeder Version neu ist, die neueste zuerst. Die Versionsnummern: 0.Y = Sam
 
 *Changelog of GoGoHam, newest first (in German).*
 
+## Neu in 0.10.47.5
+
+* **Installation unter Arch/Garuda/Manjaro repariert:** Wer GoGoHam 0.10.47.4 nach der Anleitung
+  installieren wollte, bekam von pacman „Signatur … ist ungültig“. Der Download-Server lieferte
+  noch eine ältere Paketdatei zur neuen Unterschrift aus. Am Programm selbst hat sich nichts
+  geändert, das Paket ist nur neu gebaut.
+
 ## Neu in 0.10.47.4
 
 * **WS-Update unter Debian/Ubuntu repariert:** War WS noch aus den Paketquellen installiert
