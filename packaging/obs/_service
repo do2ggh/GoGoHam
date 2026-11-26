@@ -1,6 +1,7 @@
-<!-- OBS holt den Quelltext selbst von GitHub (neueste Versionsmarke vX.Y.Z) -->
+<!-- OBS holt den Quelltext selbst von GitHub (neueste Versionsmarke vX.Y.Z).
+     2026-11-26: tar_scm statt obs_scm + tar – den Baustein „tar“ gibt es auf dem Server nicht mehr. -->
 <services>
-  <service name="obs_scm">
+  <service name="tar_scm">
     <param name="url">https://github.com/do2ggh/GoGoHam.git</param>
     <param name="scm">git</param>
     <param name="revision">main</param>
@@ -9,9 +10,6 @@
     <param name="filename">gogoham</param>
     <param name="exclude">.github</param>
     <param name="exclude">stick</param>
-  </service>
-  <service name="tar">
-    <param name="obsinfo">gogoham.obsinfo</param>
   </service>
   <service name="recompress">
     <param name="file">*.tar</param>
