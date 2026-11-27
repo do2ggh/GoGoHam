@@ -113,6 +113,13 @@ sudo pacman -Syu gogoham
 
 The repository is hosted by the [openSUSE Build Service](https://build.opensuse.org/package/show/home:Franz/gogoham). The key the packages are signed with has the fingerprint `D389DED10CE918036666175678AF9B87F520FFB8`. Installation has been tested on fresh systems of all distributions listed above. For announcements (speech output) on Arch, also install `qt6-speech`. Once the repository is added, GoGoHam also shows up in the software centre (Discover, GNOME Software …) under "Ham radio".
 
+### As a live stick (no installation)
+
+GoGoHam also runs straight from a USB stick (16 GB or more) – on any computer, without installing
+anything; logs and settings stay on the stick. The image `gogoham-live-<version>.iso` is available
+under [Releases](https://github.com/do2ggh/GoGoHam/releases). Write it to the stick with balenaEtcher,
+`dd` or Rufus (**DD mode**) – see the included `LIESMICH.txt` and the manual, chapter "Live stick".
+
 ### From source (Arch, Garuda, Manjaro)
 
 ```bash

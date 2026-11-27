@@ -114,6 +114,14 @@ sudo pacman -Syu gogoham
 
 Die Paketquelle liegt beim [openSUSE Build Service](https://build.opensuse.org/package/show/home:Franz/gogoham). Der Schlüssel, mit dem die Pakete unterschrieben sind, hat den Fingerabdruck `D389DED10CE918036666175678AF9B87F520FFB8`. Getestet ist die Installation auf frischen Systemen aller oben genannten Distributionen. Für die Ansagen (Sprachausgabe) unter Arch zusätzlich `qt6-speech` installieren. Ist die Paketquelle eingetragen, findest du GoGoHam auch in der Software-Verwaltung (Discover, GNOME Software …) unter „Amateurfunk“.
 
+### Als Live-Stick (ohne Installation)
+
+GoGoHam läuft auch direkt von einem USB-Stick (ab 16 GB) – an jedem Rechner, ohne etwas zu
+installieren; Logs und Einstellungen bleiben auf dem Stick. Das Abbild
+`gogoham-live-<Version>.iso` gibt es unter [Releases](https://github.com/do2ggh/GoGoHam/releases).
+Auf den Stick schreiben mit balenaEtcher, `dd` oder Rufus (**DD-Modus**) – Anleitung in der
+beiliegenden `LIESMICH.txt` und im Handbuch, Kapitel „Live-Stick“.
+
 ### Aus dem Quelltext (Arch, Garuda, Manjaro)
 
 ```bash
