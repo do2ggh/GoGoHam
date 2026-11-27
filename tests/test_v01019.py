@@ -1,6 +1,6 @@
 """0.10.19: Übung unübersehbar markiert, Karte in der Übung, Desktop-Verknüpfung, Handbuchsuche."""
-
 import json
+import os
 import subprocess
 import sys
 import textwrap
@@ -23,8 +23,18 @@ def test_desktop_link(tmp_path):
     home = tmp_path / "home"
     src = extapps.desktop_file("wsjtx_improved", "/usr/bin/ws", str(home), (str(apps),))
     assert src == apps / "wsjtx.desktop"
-    link = extapps.add_desktop_link("wsjtx_improved", "/usr/bin/ws", str(home), (str(apps),))
+    calls = []
+    link = extapps.add_desktop_link("wsjtx_improved", "/usr/bin/ws", str(home), (str(apps),),
+                                    run=lambda a, t=30: calls.append(a) or os.utime(a[2], (0, 0)) or (0, ""),
+                                    which=lambda n: "/usr/bin/" + n)
     assert link == home / "Desktop" / "gogoham-wsjtx_improved.desktop"
+    assert link.stat().st_mtime > 0                 # nach dem Markieren neu angefasst
+    # 0.10.47.6: für LXQt/pcmanfm-qt als vertrauenswürdig markiert (sonst „!“ + Rückfrage)
+    assert calls == [["gio", "set", str(link), "metadata::trust", "true"]]
+    calls.clear()                                    # ohne gio: nur kopieren, kein Fehler
+    assert extapps.add_desktop_link("wsjtx_improved", "/usr/bin/ws", str(home), (str(apps),),
+                                    run=lambda a, t=30: calls.append(a) or (0, ""),
+                                    which=lambda n: None) == link and calls == []
     assert "Exec=ws --x" in link.read_text() and link.stat().st_mode & 0o111
     extapps.remove_desktop_link("wsjtx_improved", str(home))
     assert not link.exists()

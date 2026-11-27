@@ -7,17 +7,16 @@ done
 systemctl enable gogoham-austausch.service || true
 systemctl enable gogoham-uhr.service || true
 chmod 0755 /usr/local/sbin/gogoham-stick-reset /usr/local/sbin/gogoham-austausch \
-    /usr/local/sbin/gogoham-uhr /usr/local/sbin/gogoham-stick-zeitzone /usr/local/bin/gogoham-hintergrund \
+    /usr/local/sbin/gogoham-uhr /usr/local/sbin/gogoham-stick-zeitzone \
     /usr/local/sbin/gogoham-stick-kopie
 # Zeitdienst: chrony (ohne rtcsync, siehe /etc/chrony/chrony.conf); timesyncd nicht daneben
 systemctl enable chrony.service || true
 systemctl mask systemd-timesyncd.service || true
 # Desktop: Verknüpfungen GoGoHam und Austausch-Ordner (vor dem Anlegen des Benutzers in skel)
 install -D -m 0755 /usr/share/applications/gogoham.desktop /etc/skel/Desktop/gogoham.desktop
-chmod 0755 /etc/skel/Desktop/austausch.desktop
+chmod 0755 /etc/skel/Desktop/austausch.desktop /etc/skel/Desktop/herunterfahren.desktop
 chmod 0440 /etc/sudoers.d/gogoham-live
-# Kein „Willkommen bei Plasma“, kein Warten aufs Netz beim Start
-apt-get purge -y plasma-welcome || true
+# Kein Warten aufs Netz beim Start
 systemctl disable NetworkManager-wait-online.service || true
 # Benutzer schon beim Bauen anlegen: live-config müsste das sonst beim ersten Start tun, und auf
 # langsamen Sticks dauert jeder einzelne Schritt Sekunden (gemessen: 2,5 Minuten).
@@ -29,6 +28,9 @@ mkdir -p /home/gogoham/Desktop /home/gogoham/.config
 cp -n /etc/skel/Desktop/*.desktop /home/gogoham/Desktop/
 cp -n /etc/skel/.config/user-dirs.dirs /home/gogoham/.config/
 chown -R gogoham:gogoham /home/gogoham/Desktop /home/gogoham/.config
+# Schreibtisch-Verknüpfungen als vertrauenswürdig markieren: erst im laufenden System, siehe
+# /usr/local/bin/gogoham-schreibtisch (beim Bauen gesetzt, wirkte es nicht – VM-Test 2026-11-27)
+chmod 0755 /usr/local/bin/gogoham-schreibtisch
 for g in audio cdrom dip floppy video plugdev netdev dialout bluetooth sudo users; do
     getent group "$g" >/dev/null && adduser gogoham "$g" >/dev/null || true
 done
@@ -39,10 +41,15 @@ systemctl mask ldconfig.service
 # WS/fldigi installiert GoGoHam selbst (apt-get/flatpak, ohne PackageKit).
 systemctl mask packagekit.service packagekit-offline-update.service \
     apt-daily.timer apt-daily-upgrade.timer man-db.timer || true
-apt-get purge -y plasma-discover || true
+# Schlank (Nutzer 2026-11-27: nur was GoGoHam, Internet, Terminal und Ton brauchen): keine täglichen
+# Sicherungen der Paketliste und keine Dateisystem-Prüfläufe auf dem Stick
+systemctl mask dpkg-db-backup.timer e2scrub_all.timer e2scrub_reap.service cron.service || true
 # Startbild (Plymouth): GoGoHam-Logo, Ladeanzeige aus dem Thema „spinner“
 for f in /usr/share/plymouth/themes/spinner/*.png; do
     cp -n "$f" /usr/share/plymouth/themes/gogoham/
 done
 plymouth-set-default-theme gogoham
 update-initramfs -u -k all
+# Schlanker Stick: Paket-Suchspeicher baut apt bei Bedarf selbst neu (die Paketlisten bleiben –
+# GoGoHam prüft damit, ob WS/fldigi verfügbar sind)
+rm -f /var/cache/apt/*.bin

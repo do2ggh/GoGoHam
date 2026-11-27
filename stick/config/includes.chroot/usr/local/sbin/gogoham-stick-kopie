@@ -126,7 +126,7 @@ echo "/ union" > "$tmp/persistence.conf"
 umount "$tmp"
 rmdir "$tmp"
 sync
-# KDE soll die neuen Teile nicht gleich einhängen – der Stick kann sofort ab
+# Die Oberfläche soll die neuen Teile nicht gleich einhängen – der Stick kann sofort ab
 for p in "$P4" "$P5"; do umount "$p" 2>/dev/null || true; done
 echo "TEMPO $SEQ $KLEIN"
 echo "SCHRITT fertig"

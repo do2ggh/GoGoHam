@@ -243,3 +243,88 @@ def test_single_instance(tmp_path, monkeypatch):
     again = subprocess.run([sys.executable, str(script), "100"], capture_output=True,
                            text=True, timeout=30)
     assert again.stdout.strip() == "erster"
+
+
+def test_single_instance_nach_neustart(tmp_path):
+    """0.10.47.6: Sperre aus einem früheren Systemstart, deren Prozessnummer jetzt einem anderen
+    Programm gehört – GoGoHam startet trotzdem. Eigener Prozess: andere Tests ersetzen PySide6
+    zeitweise durch eine Attrappe (fake_qt)."""
+    import os
+    import subprocess
+    import sys
+    import textwrap
+    script = textwrap.dedent(f"""
+        import os, socket, sys
+        sys.path.insert(0, {str(HERE.parent)!r})
+        os.environ["XDG_DATA_HOME"] = {str(tmp_path / "data")!r}
+        from gogoham.gui import single
+        lock = {str(tmp_path / "gogoham.lock")!r}
+        from pathlib import Path
+        lock = Path(lock)
+        lock.write_text(f"{{os.getpid()}}\\npython3.13\\ngogoham\\nmaschine\\nalter-start\\n")
+        assert single._from_earlier_boot(lock, "neuer-start")
+        assert not single._from_earlier_boot(lock, "alter-start")   # gleicher Start: Qt entscheidet
+        assert not single._from_earlier_boot(lock, "")                # unbekannt: nichts anfassen
+        lock.write_text(f"{{os.getpid()}}\\npython3.13\\ngogoham\\n")  # Qt-Fassung ohne Kennung
+        assert not single._from_earlier_boot(lock, "neuer-start")
+        assert not single._from_earlier_boot(Path(str(lock) + ".fehlt"), "neuer-start")
+        if single._boot_id():                                         # echt unter Linux
+            path, _ = single._names()
+            # so, wie Qt sie schreibt: lebende Nummer, passender Programmname, dieser Rechner –
+            # Qt allein hält das für „läuft schon“
+            exe = os.path.basename(os.readlink("/proc/self/exe"))
+            stale = f"{{os.getpid()}}\\n{{exe}}\\n{{socket.gethostname()}}\\nmaschine\\nalter-start\\n"
+            path.write_text(stale)
+            orig = single._from_earlier_boot
+            single._from_earlier_boot = lambda p: False
+            assert not single.SingleInstance().lock()                 # Gegenprobe ohne die Prüfung
+            single._from_earlier_boot = orig
+            path.write_text(stale)
+            s = single.SingleInstance()
+            assert s.lock()
+            s.release()
+        print("ok")
+    """)
+    r = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=60,
+                       env={**os.environ, "QT_QPA_PLATFORM": "offscreen"})
+    assert r.stdout.strip() == "ok", r.stderr[-2000:]
+
+
+def test_single_instance_herunterfahren(tmp_path, monkeypatch):
+    """0.10.48: „gogoham --herunterfahren“ bittet das laufende GoGoHam, selbst herunterzufahren
+    (Schreibtisch-Symbol auf dem Stick); ein normaler zweiter Start holt es nur nach vorne."""
+    import subprocess
+    import sys
+    import textwrap
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    script = tmp_path / "inst.py"
+    script.write_text(textwrap.dedent(f"""
+        import sys
+        sys.path.insert(0, {str(HERE.parent)!r})
+        from PySide6.QtCore import QTimer
+        from PySide6.QtWidgets import QApplication, QWidget
+        app = QApplication([])
+        from gogoham.gui.single import POWEROFF, RAISE, SingleInstance
+        s = SingleInstance()
+        if not s.lock(POWEROFF if sys.argv[2] == "aus" else RAISE):
+            print("zweiter", flush=True)
+            sys.exit(0)
+        w = QWidget()
+        s.bring_to_front = lambda: print("nach vorne", flush=True)
+        s.on_poweroff = lambda: print("herunterfahren", flush=True)
+        s.listen(w)
+        print("erster", flush=True)
+        QTimer.singleShot(int(sys.argv[1]), app.quit)
+        app.exec()
+        s.release()
+    """), encoding="utf-8")
+    first = subprocess.Popen([sys.executable, str(script), "5000", "-"], stdout=subprocess.PIPE,
+                             text=True)
+    assert first.stdout.readline().strip() == "erster"
+    for arg in ("-", "aus"):
+        r = subprocess.run([sys.executable, str(script), "100", arg], capture_output=True,
+                           text=True, timeout=30)
+        assert r.stdout.strip() == "zweiter"
+    out = first.communicate(timeout=30)[0]
+    assert out.count("nach vorne") == 2 and out.count("herunterfahren") == 1

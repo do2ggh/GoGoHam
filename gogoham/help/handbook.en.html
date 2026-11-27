@@ -2685,7 +2685,11 @@ and field day, but not banking standard.</p>
 <h2 id="usb-stick">31. Live stick (GoGoHam from a USB stick)</h2>
 <p>GoGoHam can run from a <b>live stick</b>: plug in the stick, start the computer from it (when
 switching on, usually press F12, F8 or Esc to open the boot menu and choose the stick) – done.
-Nothing is installed or changed on the computer; without the stick it starts as before. The stick also
+Nothing is installed or changed on the computer; without the stick it starts as before.
+The stick's desktop is plain and fast, even on older laptops (from 0.10.48: LXQt): at the bottom the
+bar with start menu, clock, Wi-Fi, volume and Bluetooth icons, on the desktop "GoGoHam", "Exchange
+folder" and "Shut down". Only what GoGoHam, the internet (Firefox), a terminal and sound need is
+running. The stick also
 starts with <b>Secure Boot</b> switched on (tested); if a computer still refuses it, switch Secure Boot off in the BIOS.</p>
 <p>Everything you change stays on the stick: logs, settings and programs you install via
 <a href="#zusatzprogramme">Companion programs</a>. Plug the stick into another computer later and
@@ -2695,6 +2699,13 @@ again.</p>
 <p>When GoGoHam runs from the stick, the settings have a section <b>USB stick</b> (at the very
 bottom of the list). On a normally installed PC it is not shown.</p>
 <ul>
+<li><b>Connect to Wi-Fi …</b> (from 0.10.48): If there is no internet after the start (no network
+cable, no known Wi-Fi yet), GoGoHam opens the window <b>Connect to the internet</b> by itself: choose
+the Wi-Fi in the list (bars ▂▄▆█ show the signal strength, 🔒 means "with password"), enter the
+password, <i>Connect</i>. The stick remembers the Wi-Fi for the next starts. If the password is wrong,
+the window says so and you simply enter it again. If you operate without internet, untick "Ask at
+start when there is no internet". The window is always available here under <i>Connect to Wi-Fi …</i>;
+the Wi-Fi icon at the bottom right of the bar keeps working too.</li>
 <li><b>Space on the stick:</b> how much is still free in the data area and in the exchange folder. When
 it gets tight (below 1 GB or below 5 %), GoGoHam warns in the hint bar.</li>
 <li><b>Exchange folder:</b> a part of the stick that Windows can read too – plug the stick into a
@@ -2706,8 +2717,9 @@ folder “GoGoHam-Sicherung”. Practice logs are not copied. The GoGoHam file (
 <li><b>Clock:</b> Windows computers keep their built-in clock on local time, other computers on UTC. At startup the stick checks whether Windows is installed on the computer and reads the clock accordingly. GoGoHam sets the <b>time zone</b> from your locator (only if the time would otherwise differ). With internet the stick also synchronises the clock by itself. Without internet GoGoHam only shows a calm hint “Time taken from the computer” – compare the UTC time at the top right with your phone once. As soon as the clock is synchronised, the hint disappears. If it is still wrong: <b>Set clock …</b> (also via <i>Station → Check clock …</i>) and enter the time in <b>UTC</b>. Only the clock of the running system is changed, never the computer's built-in clock.</li>
 <li><b>Switching off:</b> <i>File → Quit and shut down …</i> (from 0.10.20; before that under
 Settings → USB stick) quits GoGoHam properly after a question and switches the computer off. Only
-remove the stick once the computer is off – otherwise data may be lost. GoGoHam points this out once
-at the first start.</li>
+remove the stick once the computer is off – otherwise data may be lost. The <b>Shut down</b> icon on
+the desktop (from 0.10.48) does the same – if GoGoHam is not running, it only asks briefly. GoGoHam
+points this out once at the first start.</li>
 <li><b>Reset stick to factory settings …:</b> after a safety question, deletes all logs, settings and
 programs installed later. The computer restarts, and the stick is like new. The <b>exchange folder
 is kept</b>.</li>
@@ -2724,6 +2736,12 @@ otherwise GoGoHam downloads nothing.</li>
 <li>The new version is stored in the data part of the stick. At start GoGoHam always takes the
 newer one: the installed update or the version that came with the stick. If you later write a newer
 stick image (keeping the data), GoGoHam removes the old update by itself.</li>
+<li><b>New stick image written</b> (keeping the data, from 0.10.48): at the first start the stick
+clears the old system files from the data part so they do not disturb the new system. Kept are
+logs, settings, everything in your home folder, Wi-Fi connections, time zone, Bluetooth pairings,
+rules for USB devices and Flatpak programs. <b>Programs installed in addition</b> (e.g. WS) are gone
+afterwards – GoGoHam tells you once at start which ones, and you install them again under
+<i>Settings → Companion programs</i>; their settings are still there.</li>
 <li>If a new version needs programs that are missing on the stick, GoGoHam installs nothing and
 says that a new stick image is needed.</li>
 <li><b>Back to the stick version</b> deletes all updates; after the restart the version that came

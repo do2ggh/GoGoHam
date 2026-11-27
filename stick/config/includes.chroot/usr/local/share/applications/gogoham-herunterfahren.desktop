@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Shut down
+Name[de]=Herunterfahren
+Comment=Close GoGoHam properly and shut down the computer
+Comment[de]=GoGoHam ordentlich beenden und den Rechner ausschalten
+Icon=system-shutdown
+Exec=gogoham --herunterfahren
+Terminal=false
+Categories=System;

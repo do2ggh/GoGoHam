@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+# GoGoHam-Live-Stick: über gogoham-schreibtisch (Verknüpfungen vorher als vertrauenswürdig markieren)
+Exec=/usr/local/bin/gogoham-schreibtisch
+TryExec=pcmanfm-qt
+OnlyShowIn=LXQt;
+X-LXQt-Module=true
+Name=Desktop
+Name[de]=Arbeitsfläche

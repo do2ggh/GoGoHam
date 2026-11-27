@@ -3,10 +3,55 @@
 # Läuft vor live-boot, also bevor der Datenteil benutzt wird.
 # Außerdem: nach einem neuen Abbild (Stick aktualisieren, Daten bleiben) die alten
 # overlay-Verweise „trusted.overlay.origin“ entfernen – sie passen nicht mehr zum neuen Abbild.
+# Und (ab 0.10.47.6): nach einem neuen Abbild den Systemteil im Datenteil aufräumen. Sonst überdecken
+# alte Systemdateien (v. a. die Paketliste /var/lib/dpkg/status) das neue System. Es bleibt nur,
+# was dem Benutzer gehört (BEHALTEN); zusätzlich installierte Programme müssen neu installiert
+# werden – GoGoHam sagt es beim Start (Datei STICK_NEU im Benutzerordner, Liste der Programme).
 PREREQ="udev gogoham-einrichten"   # erst einrichten (frischer Stick), dann zurücksetzen
 prereqs() { echo "$PREREQ"; }
+
+BEHALTEN="home etc/NetworkManager/system-connections etc/localtime etc/timezone etc/udev/rules.d
+var/lib/bluetooth var/lib/flatpak"
+STICK_NEU="home/gogoham/.config/gogoham/stick-aktualisiert"
+
+# aufraeumen <Datenteil>: rw → rw.neu (nur BEHALTEN) → rw. Bricht der Strom mittendrin ab, macht
+# der nächste Start einfach weiter: Was schon in rw.neu liegt, bleibt dort, es geht nichts verloren.
+aufraeumen() {
+    a_rw="$1/rw"
+    a_neu="$1/rw.neu"
+    [ -d "$a_rw" ] || [ -d "$a_neu" ] || return 0
+    mkdir -p "$a_neu"
+    for a_p in $BEHALTEN; do
+        [ -e "$a_rw/$a_p" ] || [ -L "$a_rw/$a_p" ] || continue
+        [ -e "$a_neu/$a_p" ] || [ -L "$a_neu/$a_p" ] && continue
+        case "$a_p" in */*) mkdir -p "$a_neu/${a_p%/*}" ;; esac
+        mv "$a_rw/$a_p" "$a_neu/$a_p"
+    done
+    # Schreibtisch-Verknüpfungen von GoGoHam zu Programmen, die mit dem alten System verschwinden
+    # (gogoham-<Programm>.desktop; Flatpak-Programme bleiben und behalten ihre Verknüpfung)
+    a_weg=""
+    for a_f in "$a_neu"/home/*/Desktop/gogoham-*.desktop; do
+        [ -f "$a_f" ] || continue
+        a_fp=0
+        while IFS= read -r a_z; do
+            case "$a_z" in Exec=flatpak*) a_fp=1 ;; esac
+        done < "$a_f"
+        [ "$a_fp" = 1 ] && continue
+        a_k=${a_f##*/gogoham-}
+        a_weg="$a_weg${a_k%.desktop}
+"
+        rm -f "$a_f"
+    done
+    if [ -d "$a_neu/${STICK_NEU%/*}" ] && [ ! -e "$a_neu/$STICK_NEU" ]; then
+        printf '%s' "$a_weg" > "$a_neu/$STICK_NEU"
+    fi
+    rm -rf "$a_rw"
+    mv "$a_neu" "$a_rw"
+}
+
 case "$1" in
     prereqs) prereqs; exit 0 ;;
+    aufraeumen) aufraeumen "$2"; exit 0 ;;        # nur für die Tests (tests/test_stick_aufraeumen.py)
 esac
 
 grep -q persistence /proc/cmdline || exit 0
@@ -35,8 +80,9 @@ fi
 neu=$(cat /etc/gogoham-build 2>/dev/null)
 alt=$(cat "$mnt/.gogoham-build" 2>/dev/null)
 if [ -n "$neu" ] && [ "$neu" != "$alt" ]; then
-    if [ -d "$mnt/rw" ]; then
+    if [ -d "$mnt/rw" ] || [ -d "$mnt/rw.neu" ]; then
         echo "GoGoHam: Stick wurde aktualisiert – Daten werden angepasst ..."
+        aufraeumen "$mnt"
         find "$mnt/rw" -xdev -print0 2>/dev/null | \
             xargs -0 -r setfattr -h -x trusted.overlay.origin 2>/dev/null
     fi

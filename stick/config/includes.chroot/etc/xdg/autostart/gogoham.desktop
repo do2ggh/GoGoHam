@@ -5,3 +5,4 @@ Exec=gogoham
 Icon=gogoham
 Terminal=false
 X-KDE-autostart-after=panel
+X-LXQt-Need-Tray=true

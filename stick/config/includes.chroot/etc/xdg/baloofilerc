@@ -1,4 +1,0 @@
-# Live-Stick: keine Dateisuche im Hintergrund (sie schreibt einen großen Index auf den Stick).
-# Dolphin findet Dateien weiter über den Namen.
-[Basic Settings]
-Indexing-Enabled=false

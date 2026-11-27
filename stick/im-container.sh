@@ -54,7 +54,7 @@ lb config "${QUELL_OPT[@]}" \
     --bootloaders "grub-pc grub-efi" \
     --debian-installer none \
     --firmware-binary false \
-    --firmware-chroot true \
+    --firmware-chroot false \
     --memtest none \
     --chroot-squashfs-compression-type zstd \
     --apt-indices true \

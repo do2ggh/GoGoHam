@@ -1,0 +1,19 @@
+#!/bin/sh
+# GoGoHam-Live-Stick: startet den LXQt-Schreibtisch (pcmanfm-qt). Vorher die eigenen Verknüpfungen
+# als vertrauenswürdig markieren – sonst zeigt LXQt ein „!“ am Symbol und fragt vor dem Öffnen
+# nach (libfm-qt: metadata::trust). Das geht nur im laufenden System (VM-Test 2026-11-27: beim
+# Bauen gesetzt, wirkte es nicht) und muss VOR dem Schreibtisch passieren, sonst bleibt das „!“
+# bis zum nächsten Start. Nur GoGoHam, Austausch-Ordner, Herunterfahren und die von GoGoHam angelegten
+# Programm-Verknüpfungen – fremde Dateien auf dem Schreibtisch bleiben geschützt.
+for f in "$HOME/Desktop/gogoham.desktop" "$HOME/Desktop/austausch.desktop" \
+         "$HOME/Desktop/herunterfahren.desktop" "$HOME"/Desktop/gogoham-*.desktop; do
+    [ -f "$f" ] && gio set "$f" metadata::trust true 2>/dev/null
+done
+# Ohne eigene Einstellungsdatei, aber mit vorhandenem Ordner (beim Herunterfahren mitten im
+# Speichern beendet: nur settings.conf.lock bleibt) nimmt pcmanfm-qt nicht die Vorgabe aus /etc/xdg,
+# sondern leere Standardwerte – schwarzer Hintergrund (VM-Test 2026-11-27). Dann Vorgabe kopieren.
+u="$HOME/.config/pcmanfm-qt/lxqt"
+if [ ! -s "$u/settings.conf" ] && [ -f /etc/xdg/pcmanfm-qt/lxqt/settings.conf ]; then
+    mkdir -p "$u" && cp /etc/xdg/pcmanfm-qt/lxqt/settings.conf "$u/settings.conf"
+fi
+exec pcmanfm-qt --desktop --profile=lxqt "$@"

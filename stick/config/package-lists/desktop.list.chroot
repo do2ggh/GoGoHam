@@ -7,20 +7,34 @@ sudo
 locales
 keyboard-configuration
 console-setup
-# KDE Plasma (schlank)
-kde-plasma-desktop
+# Oberfläche LXQt (seit 2026-11-27 statt KDE Plasma: schlanker, flott auch auf schwachen Laptops).
+# Fenster-Verwaltung xfwm4 (Debian-Vorgabe für LXQt), X11; Anmeldung automatisch über sddm
+# (live-config erkennt startlxqt). sddm-theme-breeze NICHT – zieht plasma-workspace nach; auch kein
+# Debian-Design (desktop-base, siehe apt/preferences.d/gogoham-schlank).
+lxqt-core
+xfwm4
+xfwm4-theme-breeze
+xserver-xorg
+x11-xserver-utils
+xdg-utils
 sddm
-sddm-theme-breeze
-plasma-nm
-plasma-pa
-konsole
-dolphin
-kate
-ark
-okular
-gwenview
-kde-spectacle
-systemsettings
+sddm-theme-maya
+# WLAN-Symbol (nm-applet), Lautstärke, Bluetooth
+network-manager-gnome
+pavucontrol-qt
+blueman
+# Kleine Programme: Texteditor, Bilder, PDF, Archive, Bildschirmfoto
+featherpad
+lximage-qt
+qpdfview
+lxqt-archiver
+screengrab
+lxqt-powermanagement
+lxqt-about
+# Laufwerke im Dateimanager einhängen (USB-Sticks, Austausch-Ordner)
+gvfs
+udisks2
+# Browser
 firefox-esr
 firefox-esr-l10n-de
 network-manager
@@ -33,7 +47,9 @@ dosfstools
 e2fsprogs
 # „Neuen Stick erstellen“: sfdisk (Teile anlegen)
 fdisk
-# Treiber und Firmware für möglichst viele Rechner
+# Treiber und Firmware für möglichst viele Rechner (PCs, Laptops, WLAN-, Sound- und Grafikchips).
+# Bewusst NICHT (seit 2026-11-27, --firmware-chroot false): Server-Netzwerkkarten, Rechenzentrums-
+# GPUs, TV-Karten, uralte WLAN-Chips – zusammen ~300 MB.
 firmware-linux
 firmware-linux-nonfree
 firmware-misc-nonfree
@@ -44,6 +60,14 @@ firmware-atheros
 firmware-brcm80211
 firmware-intel-sound
 firmware-sof-signed
+firmware-cirrus
+firmware-mediatek
+firmware-intel-graphics
+firmware-intel-misc
+firmware-nvidia-graphics
+firmware-ath9k-htc
+firmware-carl9170
+firmware-zd1211
 intel-microcode
 amd64-microcode
 # GoGoHam braucht (das Paket selbst liegt in packages.chroot)
@@ -59,6 +83,9 @@ busybox
 plymouth
 plymouth-themes
 fonts-noto-core
+# Chinesisch/Japanisch/Koreanisch und Emojis im Browser (kamen bei Plasma als Empfehlung mit)
+fonts-noto-cjk
+fonts-noto-color-emoji
 attr
 chrony
 flatpak

@@ -51,6 +51,19 @@ class StickPage(QDialog):
         bl.addWidget(self.chk_backup)
         lay.addWidget(box)
 
+        # 0.10.48: WLAN ohne Linux-Kenntnisse
+        box = QGroupBox(tr("Internet"))
+        bl = QVBoxLayout(box)
+        self.btn_wlan = QPushButton(tr("WLAN verbinden …"))
+        self.btn_wlan.setToolTip(tr("WLAN auswählen und Passwort eingeben. Mit Netzwerkkabel ist "
+                                    "der Rechner schon von selbst verbunden."))
+        if "wlan" in self.actions:
+            self.btn_wlan.clicked.connect(self.actions["wlan"])
+        else:
+            self.btn_wlan.setEnabled(False)
+        bl.addWidget(self.btn_wlan)
+        lay.addWidget(box)
+
         box = QGroupBox(tr("Uhrzeit"))
         bl = QVBoxLayout(box)
         self.btn_clock = QPushButton(tr("Uhrzeit stellen …"))

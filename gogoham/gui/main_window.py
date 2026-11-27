@@ -309,12 +309,15 @@ class MainWindow(QMainWindow):
         from .. import livestick
         if livestick.is_live() and not livestick.persistent():
             later.append((90, self._stick_no_save))        # 0.10.22: Stick ohne Datenteil
+        if livestick.is_live() and livestick.refreshed() is not None:
+            later.append((95, self._stick_refreshed))     # 0.10.47.6: neues Abbild, aufgeräumt
         if livestick.is_live() and not self.cfg.get("stick_hint_done"):
             later.append((100, self._stick_hint))         # Live-Stick: einmal „nicht abziehen“, zuerst
         # 0.10.12: keine Frage nach Rufzeichen/Locator mehr beim Start – das Willkommensfenster
         # schickt zu Einstellungen → Operator (dort stellt der Locator auch die Zeitzone ein)
         if livestick.is_live():
             later.append((160, self._stick_timezone))     # Zeitzone passend zum Locator
+            later.append((170, self._stick_wlan_later))   # 0.10.48: kein Internet → WLAN-Fenster
         # Tägliches Update (ab 0.8.10): nur beim echten Start mit Ladebildschirm
         self.daily: dailymod.DailyUpdater | None = None
         if progress is not None and dailymod.is_due(self.cfg):
@@ -700,8 +703,11 @@ class MainWindow(QMainWindow):
         self._map_asked: set[str] = set()
         self.map_dock.setWidget(self.map_view)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.map_dock)
-        self.map_dock.setFloating(True)          # erst als eigenes Fenster; andocken per Doppelklick
+        # 0.10.47.6: erst verstecken, dann schweben lassen – andersherum bekam der Fenstermanager von
+        # LXQt (xfwm4) kurz ein Fenster gezeigt und behielt es unsichtbar oben links auf dem
+        # Bildschirm, wo es alle Mausklicks schluckte (Live-Stick, Laptop-Test). Gilt für alle Docks.
         self.map_dock.hide()
+        self.map_dock.setFloating(True)          # erst als eigenes Fenster; andocken per Doppelklick
         self._map_placed = False
         self.map_view.canvas.on_point_menu = self._map_point_menu        # 0.8.23.1
         # --- Rotor-Fenster (0.8.23.1): Kompassrose, andockbar
@@ -715,8 +721,8 @@ class MainWindow(QMainWindow):
         self.rotor_view.on_setup = lambda: self.open_settings("rotor")
         self.rot_dock.setWidget(self.rotor_view)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.rot_dock)
-        self.rot_dock.setFloating(True)
         self.rot_dock.hide()
+        self.rot_dock.setFloating(True)
         self._rot_view_sig = None
         self._map_target = (None, "")
         # --- Bandöffnungs-Vorschau (0.8.27): eigenes Fenster, andockbar
@@ -726,8 +732,8 @@ class MainWindow(QMainWindow):
         self.prop_view = PropagationView(self.cfg, on_change=lambda: cfgmod.save(self.cfg))
         self.prop_dock.setWidget(self.prop_view)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.prop_dock)
-        self.prop_dock.setFloating(True)
         self.prop_dock.hide()
+        self.prop_dock.setFloating(True)
         # --- Zusatzprogramme passend zum Contest (0.10.6): fldigi, WSJT-X & Co.
         from .companions import Companions
         self.companions = Companions(self)
@@ -780,9 +786,9 @@ class MainWindow(QMainWindow):
         self.station_view.on_setup = self.show_station
         self.st_dock.setWidget(self.station_view)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.st_dock)
+        self.st_dock.hide()
         self.st_dock.setFloating(True)
         self.st_dock.resize(720, 460)
-        self.st_dock.hide()
         self.station.view = self.station_view
         self.station.view_visible = lambda: not self.st_dock.isHidden()
         self.station.label.on_click = self.open_station_window
@@ -1465,6 +1471,55 @@ class MainWindow(QMainWindow):
             "Rechner aus ist."))
         self.cfg["stick_hint_done"] = True
         cfgmod.save(self.cfg)
+
+    def _stick_refreshed(self) -> None:
+        """Nach einem neuen Stick-Abbild hat der Stick die alten Systemdateien weggeräumt (0.10.47.6)."""
+        from .. import extapps, livestick
+        keys = livestick.refreshed() or []
+        names = [extapps.BY_KEY[k].name for k in keys if k in extapps.BY_KEY]
+        text = tr("Der Stick wurde mit einem neuen System aktualisiert. Logs, Einstellungen und "
+                  "WLAN-Zugänge sind erhalten.\n\nProgramme, die du zusätzlich installiert "
+                  "hattest, wurden dabei entfernt und müssen neu installiert werden – WS, JTDX "
+                  "und fldigi unter Datei → Einstellungen → Zusatzprogramme. Ihre Einstellungen "
+                  "sind noch da.")
+        if names:
+            text += "\n\n" + tr("Neu installieren: {names}", names=", ".join(names))
+        QMessageBox.information(self, tr("USB-Stick"), text)
+        livestick.refreshed_done()
+
+    WLAN_WAIT_MS = 12000          # so lange darf sich der Rechner erst selbst verbinden
+    WLAN_TRIES = 6                # danach bis zu 6 × 5 s warten, falls gerade ein Fenster offen ist
+
+    def _stick_wlan_later(self) -> None:
+        """Live-Stick (0.10.48): nach dem Start kurz warten – Kabel und bekannte WLANs verbinden
+        sich von selbst. Ist dann kein Internet da, aber WLAN, öffnet sich das WLAN-Fenster."""
+        if self.cfg.get("stick_wlan_ask", True):
+            QTimer.singleShot(self.WLAN_WAIT_MS, lambda: self._stick_wlan_check(self.WLAN_TRIES))
+
+    def _stick_wlan_check(self, tries: int) -> None:
+        from .. import wlan
+        if not wlan.available():
+            return
+        wifi, is_online = wlan.state()
+        if not wifi or is_online:
+            return
+        if QApplication.activeModalWidget() is not None:     # nicht über ein anderes Fenster
+            if tries > 0:
+                QTimer.singleShot(5000, lambda: self._stick_wlan_check(tries - 1))
+            return
+        applog.message("Live-Stick: kein Internet – WLAN-Fenster")
+        self.open_wlan(at_start=True)
+
+    def open_wlan(self, at_start: bool = False) -> None:
+        """Fenster „Mit dem Internet verbinden“ (0.10.48)."""
+        from .wlan_dialog import WlanDialog
+        parent = QApplication.activeModalWidget() or self
+        dlg = WlanDialog(self.cfg, parent, at_start=at_start)
+        dlg.exec()
+        cfgmod.save(self.cfg)
+        if dlg.ok_ssid:
+            self.statusBar().showMessage(tr("Mit dem WLAN „{ssid}“ verbunden.", ssid=dlg.ok_ssid),
+                                         10000)
 
     def _close_for_stick(self) -> bool:
         """Einstellungsfenster schließen, dann GoGoHam ordentlich beenden (Log sichern …)."""
@@ -4788,6 +4843,7 @@ class MainWindow(QMainWindow):
                    "all": self.download_all,
                    # Live-Stick (0.10.8)
                    "clock_set": self.clock.set_manually, "stick_poweroff": self.stick_poweroff,
+                   "wlan": self.open_wlan,
                    "stick_reset": self.stick_reset, "gps_watch": self.gpsw}
         dlg = SettingsDialog(self.cfg, self, test_fn=self._test_rig, actions=actions, start=start,
                              mycall=self.meta.get("mycall", "") if self.db else "")

@@ -1,6 +1,6 @@
 # GoGoHam-Live-Stick
 
-GoGoHam als startfähiger USB-Stick: Debian 13 mit KDE Plasma, GoGoHam fertig eingerichtet.
+GoGoHam als startfähiger USB-Stick: Debian 13 mit der schlanken Oberfläche LXQt (bis 0.10.47.5: KDE Plasma), GoGoHam fertig eingerichtet.
 Logs, Einstellungen und nachinstallierte Programme bleiben auf dem Stick (Datenteil), dazu ein
 Austausch-Ordner, den auch Windows lesen kann. Bedienung: Handbuch, Kapitel „Live-Stick“.
 

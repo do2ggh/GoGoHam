@@ -4,6 +4,38 @@ Was in jeder Version neu ist, die neueste zuerst. Die Versionsnummern: 0.Y = Sam
 
 *Changelog of GoGoHam, newest first (in German).*
 
+## Neu in 0.10.48
+
+* **Live-Stick: WLAN ohne Linux-Kenntnisse.** Ist nach dem Start kein Internet da und hat der Rechner
+  WLAN, öffnet sich das Fenster „Mit dem Internet verbinden“: WLAN in der Liste wählen, Passwort
+  eingeben, fertig. Der Stick merkt sich das WLAN. Jederzeit auch unter Einstellungen → USB-Stick →
+  „WLAN verbinden …“.
+* **Live-Stick: schlanker und schneller.** Neue, einfache Oberfläche (LXQt statt KDE Plasma) – flott
+  auch auf älteren Laptops. Es läuft nur noch, was GoGoHam, das Internet, ein Terminal und der Ton
+  brauchen; unter anderem ist der Modem-Dienst weg, der USB-Schnittstellen abtastet und dabei die
+  Verbindung zum Funkgerät stören konnte. Das Stick-Abbild ist rund 40 % kleiner. Beim Start zeigt
+  der Stick wieder das GoGoHam-Logo statt eines Debian-Logos.
+* **Live-Stick: Symbol „Herunterfahren“ auf dem Schreibtisch.** Beendet GoGoHam ordentlich und schaltet
+  den Rechner aus – wie Datei → „Beenden und herunterfahren …“.
+* **Zusatzfenster blockieren nichts mehr.** Unter manchen Oberflächen blieben beim Start geschlossene
+  Zusatzfenster (Karte, Rotor, Station, Bandöffnung) unsichtbar auf dem Bildschirm liegen – dort
+  reagierte dann ein Teil des Bildschirms nicht auf die Maus.
+* **GoGoHam startet wieder zuverlässig nach dem Ausschalten.** Wurde der Rechner ausgeschaltet,
+  während GoGoHam noch lief, hielt sich GoGoHam beim nächsten Start manchmal für „läuft schon“
+  und beendete sich ohne Meldung. Das passierte, wenn zufällig ein anderes Programm die alte
+  Prozessnummer bekommen hatte – auf dem Live-Stick besonders oft. GoGoHam erkennt jetzt, dass
+  die Sperre aus einem früheren Systemstart stammt, und räumt sie weg.
+* **Live-Stick: Verknüpfungen auf dem Schreibtisch ohne Rückfrage.** Legt GoGoHam für WS, JTDX
+  oder fldigi eine Verknüpfung auf den Schreibtisch, markiert es sie jetzt gleich als
+  vertrauenswürdig. Manche Oberflächen (z. B. LXQt) zeigen sonst ein „!“ am Symbol und fragen
+  vor dem ersten Öffnen nach.
+* **Live-Stick: sauberer Neustart nach einem neuen Stick-Abbild.** Wer seinen Stick mit einem
+  neuen Abbild aktualisiert (Daten bleiben), bekam bisher alte Systemdateien aus dem Datenteil
+  über das neue System gelegt – das konnte spätere Programm-Installationen stören. Jetzt räumt der
+  Stick beim ersten Start auf. Logs, Einstellungen, WLAN-Zugänge, Zeitzone, Bluetooth und
+  Flatpak-Programme bleiben; zusätzlich installierte Programme wie WS müssen neu installiert
+  werden, GoGoHam sagt einmal, welche.
+
 ## Neu in 0.10.47.5
 
 * **Installation unter Arch/Garuda/Manjaro repariert:** Wer GoGoHam 0.10.47.4 nach der Anleitung

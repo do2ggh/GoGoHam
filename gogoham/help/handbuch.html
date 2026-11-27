@@ -2758,6 +2758,10 @@ Clubheim und Fieldday, aber kein Bank-Standard.</p>
 <p>GoGoHam kann von einem <b>Live-Stick</b> laufen: Stick einstecken, den Rechner vom Stick starten
 (beim Einschalten meist mit F12, F8 oder Esc das Startmenü öffnen und den Stick wählen) – fertig.
 Auf dem Rechner wird nichts installiert und nichts verändert; ohne Stick startet er wie vorher.
+Die Oberfläche des Sticks ist schlicht und schnell, auch auf älteren Laptops (ab 0.10.48: LXQt): unten
+die Leiste mit Startmenü, Uhr, WLAN-, Lautstärke- und Bluetooth-Symbol, auf dem Schreibtisch
+„GoGoHam“, „Austausch-Ordner“ und „Herunterfahren“. Es läuft nur, was GoGoHam, das Internet
+(Firefox), ein Terminal und der Ton brauchen.
 Der Stick startet auch mit eingeschaltetem <b>Secure Boot</b> (getestet); lehnt ein Rechner ihn trotzdem ab, im BIOS Secure Boot ausschalten.</p>
 <p>Alles, was du änderst, bleibt auf dem Stick: Logs, Einstellungen und Programme, die du über
 <a href="#zusatzprogramme">Zusatzprogramme</a> nachinstallierst. Steckst du den Stick später an
@@ -2767,6 +2771,14 @@ und „Austausch-Ordner“. Beim Deinstallieren verschwindet sie wieder.</p>
 <p>Läuft GoGoHam vom Stick, gibt es in den Einstellungen den Bereich <b>USB-Stick</b> (ganz unten in der
 Liste). Auf einem normal installierten PC fehlt er.</p>
 <ul>
+<li><b>WLAN verbinden …</b> (ab 0.10.48): Ist nach dem Start kein Internet da (kein Netzwerkkabel,
+noch kein bekanntes WLAN), öffnet GoGoHam von selbst das Fenster <b>Mit dem Internet verbinden</b>:
+WLAN in der Liste wählen (Balken ▂▄▆█ zeigen die Empfangsstärke, 🔒 heißt „mit Passwort“),
+Passwort eingeben, <i>Verbinden</i>. Der Stick merkt sich das WLAN für die nächsten Starts. Ist das
+Passwort falsch, sagt das Fenster es, und du gibst es einfach noch einmal ein. Wer ohne Internet
+funkt, nimmt das Häkchen „Beim Start fragen, wenn kein Internet da ist“ heraus. Das Fenster gibt es
+jederzeit hier unter <i>WLAN verbinden …</i>; auch das WLAN-Symbol unten rechts in der Leiste
+funktioniert weiterhin.</li>
 <li><b>Platz auf dem Stick:</b> wie viel im Datenteil und im Austausch-Ordner noch frei ist. Wird es
 knapp (unter 1 GB oder unter 5 %), warnt GoGoHam in der Hinweisleiste.</li>
 <li><b>Austausch-Ordner:</b> ein Teil des Sticks, den auch Windows lesen kann – steckst du den Stick an
@@ -2778,8 +2790,9 @@ in den Ordner „GoGoHam-Sicherung“. Übungslogs nicht. Die GoGoHam-Datei (.gg
 <li><b>Uhrzeit:</b> Windows-Rechner führen ihre eingebaute Uhr in Ortszeit, andere Rechner in UTC. Der Stick erkennt beim Start, ob auf dem Rechner Windows ist, und liest die Uhr passend. Die <b>Zeitzone</b> stellt GoGoHam aus deinem Locator (nur wenn die Uhrzeit sonst anders wäre). Mit Internet gleicht der Stick die Uhr außerdem von selbst ab. Ohne Internet zeigt GoGoHam nur einen ruhigen Hinweis „Uhrzeit vom Rechner übernommen“ – vergleiche die UTC-Zeit oben rechts einmal mit dem Handy. Sobald die Uhr abgeglichen ist, verschwindet der Hinweis. Stimmt sie trotzdem nicht: <b>Uhrzeit stellen …</b> (auch über <i>Station → Uhrzeit prüfen …</i>) und die Zeit in <b>UTC</b> eintragen. Verstellt wird nur die Uhr des laufenden Systems, nie die eingebaute Uhr des Rechners.</li>
 <li><b>Ausschalten:</b> <i>Datei → Beenden und herunterfahren …</i> (ab 0.10.20; vorher unter
 Einstellungen → USB-Stick) beendet GoGoHam nach einer Rückfrage ordentlich und schaltet den Rechner
-aus. Den Stick erst abziehen, wenn der Rechner aus ist – sonst können Daten verloren gehen. Darauf
-weist GoGoHam beim ersten Start einmal hin.</li>
+aus. Genauso das Symbol <b>Herunterfahren</b> auf dem Schreibtisch (ab 0.10.48) – läuft GoGoHam
+gerade nicht, fragt es nur kurz nach. Den Stick erst abziehen, wenn der Rechner aus ist – sonst können
+Daten verloren gehen. Darauf weist GoGoHam beim ersten Start einmal hin.</li>
 <li><b>Stick auf Werkseinstellungen zurücksetzen …:</b> löscht nach einer Sicherheitsfrage alle Logs,
 Einstellungen und nachinstallierten Programme. Der Rechner startet neu, danach ist der Stick wie
 neu. Der <b>Austausch-Ordner bleibt erhalten</b>.</li>
@@ -2797,6 +2810,12 @@ sonst lädt GoGoHam nichts.</li>
 <li>Die neue Version liegt im Datenteil des Sticks. Beim Start nimmt GoGoHam immer die neuere: die
 eingespielte oder die, die mit dem Stick kam. Schreibst du später ein neueres Stick-Abbild auf
 (Daten bleiben), räumt GoGoHam die alte Aktualisierung von selbst weg.</li>
+<li><b>Neues Stick-Abbild aufgespielt</b> (Daten bleiben, ab 0.10.48): Beim ersten Start räumt
+der Stick die alten Systemdateien im Datenteil weg, damit sie das neue System nicht stören. Es
+bleiben Logs, Einstellungen, alles in deinem Benutzerordner, WLAN-Zugänge, Zeitzone,
+Bluetooth-Kopplungen, Regeln für USB-Geräte und Flatpak-Programme. <b>Zusätzlich installierte
+Programme</b> (z. B. WS) sind danach weg – GoGoHam sagt beim Start einmal, welche, und du installierst
+sie unter <i>Einstellungen → Zusatzprogramme</i> neu; ihre Einstellungen sind noch da.</li>
 <li>Braucht eine neue Version Programme, die auf dem Stick fehlen, spielt GoGoHam nichts ein und
 sagt, dass dafür ein neues Stick-Abbild nötig ist.</li>
 <li><b>Zurück zur Fassung des Sticks</b> löscht alle Aktualisierungen; nach dem Neustart läuft

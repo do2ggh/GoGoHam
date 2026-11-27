@@ -2363,7 +2363,9 @@ class AboutDialog(QDialog):
             tr("Live-Stick: GoGoHam vom USB-Stick an jedem Rechner – Platzanzeige, Austausch-Ordner "
                "(auch unter Windows lesbar) mit Ordnern für Exporte und Log-Sicherung, Uhrzeit passend zu "
                "Rechner und Standort (Zeitzone aus dem Locator), "
-               "Herunterfahren und Zurücksetzen auf Werkseinstellungen, GoGoHam per Knopf aktualisieren"),
+               "Herunterfahren und Zurücksetzen auf Werkseinstellungen, GoGoHam per Knopf aktualisieren, "
+               "neues Stick-Abbild aufspielen – Logs, Einstellungen und WLAN bleiben, WLAN ohne "
+               "Linux-Kenntnisse verbinden"),
             tr("Mit install.sh installiert: GoGoHam per Knopf aktualisieren – vorher zur Probe "
                "geladen, Rückweg zur vorigen Version"),
             tr("CW über das Funkgerät oder einen WinKey (auch microHAM DXP), CW-Texte und "

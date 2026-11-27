@@ -51,10 +51,16 @@ def main() -> None:
     _fit = _fit_install(app)  # noqa: F841 – lebt so lange wie app
     # Nur ein GoGoHam gleichzeitig: läuft schon eins, kommt dessen Fenster nach vorne – und zwar
     # bevor hier ein Ladebildschirm erscheint (ab 0.8.7)
-    from .single import SingleInstance
+    from .single import POWEROFF, RAISE, SingleInstance
     single = SingleInstance()
-    if not single.lock():
+    # „gogoham --herunterfahren“ (Schreibtisch-Symbol auf dem Stick, ab 0.10.48): läuft GoGoHam,
+    # fährt es selbst sauber herunter (Rückfrage, Log schließen); sonst nur Rückfrage + Ausschalten
+    power_off = POWEROFF_ARG in sys.argv[1:]
+    if not single.lock(POWEROFF if power_off else RAISE):
         sys.exit(0)
+    if power_off:
+        single.release()
+        sys.exit(_power_off_only())
     # Startbildschirm mit Morse-Ladebalken „GGH“ (ab 0.8.5.1). Der Mithörton kommt nur aus
     # den Lautsprechern des PCs – mit dem Funkgerät hat er nichts zu tun.
     from .splash import MorseSplash
@@ -66,6 +72,7 @@ def main() -> None:
     win = MainWindow(progress=splash.set_status)
     splash.finish(win)                            # zeigt das Hauptfenster nach dem Durchlauf
     single.listen(win)
+    single.on_poweroff = win.stick_poweroff       # Schreibtisch-Symbol „Herunterfahren“ (0.10.48)
     code = app.exec()
     single.release()
     if getattr(win, "restart_requested", False):
@@ -79,6 +86,26 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+POWEROFF_ARG = "--herunterfahren"
+
+
+def _power_off_only() -> int:
+    """GoGoHam läuft nicht: nur fragen und den Rechner ausschalten (0.10.48)."""
+    from PySide6.QtCore import QProcess
+    from PySide6.QtWidgets import QMessageBox
+    from .. import livestick
+    cmd = livestick.poweroff_command()
+    title = tr("Rechner herunterfahren")
+    if not cmd:
+        QMessageBox.warning(None, title, tr("Herunterfahren geht hier nicht."))
+        return 1
+    if QMessageBox.question(None, title, tr(
+            "Den Rechner jetzt herunterfahren?\n\nDen Stick erst abziehen, wenn der Rechner "
+            "aus ist.")) != QMessageBox.StandardButton.Yes:
+        return 0
+    return 0 if QProcess.startDetached(cmd[0], cmd[1:]) else 1
 
 
 def install_qt_translation(app, lang: str | None = None):

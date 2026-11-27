@@ -2,8 +2,8 @@
 Type=Application
 Name=Exchange folder
 Name[de]=Austausch-Ordner
-Comment=Left: exchange folder (readable on Windows too), right: choose any drive
-Comment[de]=Links der Austausch-Ordner (auch unter Windows lesbar), rechts ein beliebiges Laufwerk
+Comment=Exchange folder (readable on Windows too); other drives are listed on the left
+Comment[de]=Austausch-Ordner (auch unter Windows lesbar); andere Laufwerke stehen links
 Icon=folder-publicshare
-Exec=sh -c 'dolphin --new-window --split "$HOME/Austausch" "$HOME"'
+Exec=sh -c 'pcmanfm-qt "$HOME/Austausch"'
 Terminal=false

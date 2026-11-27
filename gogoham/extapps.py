@@ -283,8 +283,10 @@ def desktop_link_path(key: str, home: str | None = None) -> Path:
 
 
 def add_desktop_link(key: str, path: str | None, home: str | None = None,
-                     app_dirs=APP_DIRS) -> Path | None:
-    """Verknüpfung auf den Desktop legen (Live-Stick) – ausführbar, damit Plasma ihr traut."""
+                     app_dirs=APP_DIRS, run=_run, which=shutil.which) -> Path | None:
+    """Verknüpfung auf den Desktop legen (Live-Stick) – ausführbar, damit Plasma ihr traut, und
+    als vertrauenswürdig markiert (gio metadata::trust), sonst zeigt LXQt/pcmanfm-qt ein „!“ und
+    fragt vor dem Öffnen nach (0.10.47.6)."""
     src = desktop_file(key, path, home, app_dirs)
     if src is None:
         return None
@@ -295,6 +297,12 @@ def add_desktop_link(key: str, path: str | None, home: str | None = None,
         dst.chmod(0o755)
     except OSError:
         return None
+    if which("gio"):
+        run(["gio", "set", str(dst), "metadata::trust", "true"], 10)
+        try:            # neu „anfassen“: der Schreibtisch hatte die Datei schon vor der Markierung
+            os.utime(dst)   # gelesen und zeigte sonst bis zum nächsten Start ein „!“ (VM-Test)
+        except OSError:
+            pass
     return dst
 
 

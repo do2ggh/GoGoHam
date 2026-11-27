@@ -1,0 +1,37 @@
+# Live-Stick schlanker (2026-11-27): Pakete, die nur als Empfehlung mitkämen und für GoGoHam
+# nicht gebraucht werden, gar nicht erst installieren. Hängt doch ein Paket fest davon ab,
+# bricht der Bau ab – dann hier wieder herausnehmen.
+
+# Schriften: Zusatzschnitte und seltene Schriftsysteme (~600 MB). Bleiben: fonts-noto-core,
+# fonts-noto-cjk (Chinesisch/Japanisch/Koreanisch im Browser), fonts-noto-color-emoji.
+Package: fonts-noto-extra fonts-noto-ui-extra fonts-noto-cjk-extra
+Pin: release *
+Pin-Priority: -1
+
+# Eingabehilfen für asiatische Sprachen, verschlüsselter Tresor, Datensicherung (bup/git),
+# Compiler (build-essential), Spracherkennung, Samba-Python, KDE-Hilfezentrum, zweiter Browser
+Package: ibus-data plasma-vault cryfs kup-backup bup build-essential pocketsphinx-en-us python3-samba khelpcenter konqueror
+Pin: release *
+Pin-Priority: -1
+
+# Kein Debian-Design (2026-11-27): Mit desktop-base legt Debians Plymouth-Baustein beim Bau des
+# Startsystems das Debian-Logo als watermark.png in jedes two-step-Thema – statt GoGoHam-Logo
+# zeigte der Stick „debian 13“ (VM-Nachweis, /usr/share/initramfs-tools/hooks/plymouth).
+# Ersatz: lxqt-themes (neutral), sddm-theme-maya (neutral).
+Package: desktop-base lxqt-theme-debian lxqt-branding-debian sddm-theme-debian-elarun sddm-theme-debian-maui sddm-theme-debian-breeze
+Pin: release *
+Pin-Priority: -1
+
+# Nur was GoGoHam, Internet, Terminal und Ton brauchen (Nutzer 2026-11-27). Bluetooth bleibt
+# (Headsets), Drucken nicht. ModemManager vor allem: er tastet USB-Schnittstellen nach Modems ab
+# und kann dabei die Verbindung zum Funkgerät stören.
+#   modemmanager (Mobilfunk-Modems), avahi-daemon (Geräte-/Druckersuche im Netz),
+#   system-config-printer (Druckerverwaltung + Symbol), qlipper (Zwischenablage-Verlauf),
+#   xscreensaver (Bildschirmschoner/Sperre), cron (Zeitplan-Dienst),
+#   gvfs-backends (Handys, Kameras, iPhone, Online-Konten, Windows-Freigaben im Dateimanager)
+# Achtung: LXQt EMPFIEHLT je eine Alternative – sperrt man die erste, nimmt apt die nächste
+# (VM-Test: light-locker = Bildschirmsperre + lightdm als zweiter Anmeldedienst, diodon +
+# zeitgeist über clipit). Darum alle Alternativen sperren.
+Package: modemmanager avahi-daemon system-config-printer qlipper xscreensaver cron gvfs-backends light-locker lightdm clipit diodon xfce4-clipman zeitgeist-core xsecurelock i3lock xss-lock slock xtrlock physlock xlockmore suckless-tools
+Pin: release *
+Pin-Priority: -1

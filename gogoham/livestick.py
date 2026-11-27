@@ -45,6 +45,29 @@ def is_live(marker: Path | None = None) -> bool:
     return info(marker) is not None
 
 
+def refreshed_file() -> Path:
+    """Schreibt der Stick beim Start nach einem neuen Abbild (initramfs gogoham-reset, 0.10.47.6):
+    eine Zeile je Programm, dessen Schreibtisch-Verknüpfung dabei verschwand."""
+    return Path.home() / ".config" / "gogoham" / "stick-aktualisiert"
+
+
+def refreshed(path: Path | None = None) -> list[str] | None:
+    """Wurde der Stick mit einem neuen Abbild aktualisiert? None = nein, sonst die Schlüssel der
+    Zusatzprogramme, die neu installiert werden müssen (kann leer sein)."""
+    try:
+        text = Path(path or refreshed_file()).read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return None
+    return [k.strip() for k in text.splitlines() if k.strip()]
+
+
+def refreshed_done(path: Path | None = None) -> None:
+    try:
+        Path(path or refreshed_file()).unlink()
+    except OSError:
+        pass
+
+
 def persistent(mounts: str | None = None) -> bool:
     """Speichert der Stick? (Datenteil GGH-DATEN von live-boot eingehängt – ab 0.10.22)"""
     if mounts is None:
