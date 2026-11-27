@@ -69,7 +69,8 @@ Regeln*). Die Regel-Dateien gibt es auch einzeln: [GoGoHam-rules](https://github
 ### Über die Paketquelle deiner Distribution (empfohlen)
 
 So wird GoGoHam wie jedes andere Programm installiert und **mit dem normalen Systemupdate
-aktuell gehalten**.
+aktuell gehalten**. Nur zum Ausprobieren gibt es die fertigen Pakete auch einzeln unter
+[Releases](https://github.com/do2ggh/GoGoHam/releases) – dann aber ohne automatische Updates.
 
 #### openSUSE Tumbleweed / Leap 16
 

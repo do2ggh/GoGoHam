@@ -68,7 +68,8 @@ Contests and rules*). The rule files are also available on their own:
 ### From your distribution's package repository (recommended)
 
 This installs GoGoHam like any other program and **keeps it up to date with your normal system
-update**.
+update**. For trying it out, the finished packages are also available individually under
+[Releases](https://github.com/do2ggh/GoGoHam/releases) – but without automatic updates.
 
 #### openSUSE Tumbleweed / Leap 16
 

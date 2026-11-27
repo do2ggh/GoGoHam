@@ -1,5 +1,7 @@
 # Neue Versionsmarke (z. B. v0.9.3) -> der openSUSE Build Service holt den Quelltext und baut
 # die Pakete für alle Distributionen neu. Braucht das Geheimnis OBS_TOKEN (osc token, runservice).
+# Danach wartet „release“, bis alle Pakete veröffentlicht sind, prüft sie gegen die unterschriebenen
+# Paketlisten (tools/release_pakete.py) und legt die Release-Seite mit den Dateien an.
 name: Pakete bauen (OBS)
 
 on:
@@ -24,3 +26,27 @@ jobs:
           fi
           curl -fsS -X POST -H "Authorization: Token $OBS_TOKEN" \
             "https://api.opensuse.org/trigger/runservice?project=home:Franz&package=gogoham"
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: obs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fertige Pakete von OBS holen und prüfen (wartet bis zu 4 Stunden)
+        run: python3 tools/release_pakete.py "${GITHUB_REF_NAME#v}" pakete --notes notes.md --warten 14400
+      - name: Release-Seite anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          if gh release view "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" pakete/* -R "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --notes-file notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" pakete/* -R "$GITHUB_REPOSITORY" --verify-tag \
+              --title "GoGoHam $V" --notes-file notes.md
+          fi
