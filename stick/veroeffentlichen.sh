@@ -87,6 +87,14 @@ gh release view "v$VER" -R "$REPO" >/dev/null 2>&1 || {
     echo "Die Release-Seite v$VER gibt es noch nicht (legt der GitHub-Ablauf nach dem OBS-Bau an)."
     exit 1
 }
+# Auf der Seite liegt schon eine SHA256SUMS mit den Paketen (Release-Job) – nicht ersetzen,
+# sondern zusammenführen (2026-11-28: sonst fehlten die Prüfsummen der Pakete)
+ALT=$(mktemp -d)
+if gh release download "v$VER" -R "$REPO" -p SHA256SUMS -D "$ALT" 2>/dev/null; then
+    { grep -v -E '  gogoham-live-' "$ALT/SHA256SUMS" || true; cat "$D/SHA256SUMS"; } > "$ALT/neu"
+    mv "$ALT/neu" "$D/SHA256SUMS"
+fi
+rm -f "$ALT/SHA256SUMS"; rmdir "$ALT" 2>/dev/null || true
 echo "==> Lade an die Release-Seite v$VER (mehrere GB, das dauert) …"
 ( cd "$D" && gh release upload "v$VER" -R "$REPO" --clobber ./* )
 MARKE="<!-- gogoham-live-stick -->"

@@ -9,7 +9,7 @@ Austausch-Ordner, den auch Windows lesen kann. Bedienung: Handbuch, Kapitel „L
     sudo bash stick/bauen.sh
 
 Baut in einem Debian-13-Container (podman): zuerst GoGoHam aus diesem Projekt als Debian-Paket,
-dann mit live-build das Abbild `stick/ausgabe/gogoham-live-<Version>.iso` (rund 2,7 GB, etwa
+dann mit live-build das Abbild `stick/ausgabe/gogoham-live-<Version>.iso` (rund 1,5 GB, etwa
 15 Minuten; der Paket-Zwischenspeicher in `stick/arbeit/` macht weitere Bauten schneller).
 Nach dem Bau räumt das Skript selbst auf: Die Reste in `arbeit/` verschwinden (der
 Zwischenspeicher bleibt), und von den Abbildern bleiben nur das neue und das vorherige.
