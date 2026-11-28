@@ -23,11 +23,14 @@ if [ ! -f "$QISO" ]; then
     echo "Bitte so bauen:  sudo QUELLEN=1 bash $HIER/bauen.sh"
     exit 1
 fi
+SLTAR="$A/gogoham-live-$VER-quellen-startlader.tar"
+[ -f "$SLTAR" ] || { echo "Es fehlen die Quellen des Startladers ($SLTAR) – beim Bau mit QUELLEN=1 entstehen sie."; exit 1; }
 [ "$(stat -c %s "$ISO")" -le "$GRENZE" ] || { echo "Stick-Abbild ist 2 GiB oder größer – passt nicht auf GitHub."; exit 1; }
 
 D="$A/github-$VER"
 rm -rf "$D"; mkdir -p "$D"
 ln "$ISO" "$D/" 2>/dev/null || cp "$ISO" "$D/"
+cp "$SLTAR" "$D/"
 QNAME="gogoham-live-$VER-quellen.iso"
 echo "==> Quellen-Abbild in Stücke zu $TEIL teilen …"
 split -b "$TEIL" -d -a 2 "$QISO" "$D/$QNAME.teil"
@@ -40,6 +43,8 @@ Dateien
   gogoham-live-$VER.iso                  Das Stick-Abbild (startet per USB, UEFI und BIOS)
   $QNAME.teil00, .teil01 …  Quelltexte aller enthaltenen Debian-Pakete (GPL),
                                          in Stücke geteilt (GitHub nimmt höchstens 2 GB je Datei)
+  gogoham-live-$VER-quellen-startlader.tar  Quelltexte des Startladers (GRUB, shim – GPL)
+  Quelltext von GoGoHam selbst: auf dieser Seite unter „Source code“ (Versionsmarke v$VER)
   SHA256SUMS                             Prüfsummen – prüfen mit:  sha256sum -c SHA256SUMS
 
 Auf einen Stick schreiben (mindestens 16 GB, alles darauf wird gelöscht)
@@ -64,7 +69,7 @@ English: Write gogoham-live-$VER.iso to a USB stick (16 GB or more) with dd, bal
 or Rufus (DD mode!). The stick sets itself up at the first start. The source image (GPL) is
 split into parts; join them with  cat $QNAME.teil* > $QNAME  (Linux) or  copy /b … (Windows).
 EOF
-( cd "$D" && sha256sum "gogoham-live-$VER.iso" $TEILE > SHA256SUMS && \
+( cd "$D" && sha256sum "gogoham-live-$VER.iso" $TEILE "gogoham-live-$VER-quellen-startlader.tar" > SHA256SUMS && \
   sha256sum "$QISO" | sed "s|  .*|  $QNAME|" >> SHA256SUMS )
 for f in "$D"/*; do
     [ "$(stat -c %s "$f")" -le "$GRENZE" ] || { echo "Zu groß für GitHub: $f"; exit 1; }
@@ -95,7 +100,8 @@ $MARKE
 GoGoHam zum Ausprobieren ohne Installation: **\`gogoham-live-$VER.iso\`** auf einen USB-Stick
 (ab 16 GB) schreiben – mit balenaEtcher, \`dd\` oder Rufus (**DD-Modus**). Anleitung in
 \`LIESMICH.txt\` und im Handbuch, Kapitel „Live-Stick“. Die Quelltexte aller Pakete auf dem Stick
-(GPL) liegen in Stücken bei (\`$QNAME.teil…\`).
+(GPL) liegen in Stücken bei (\`$QNAME.teil…\`), die des Startladers in
+\`gogoham-live-$VER-quellen-startlader.tar\`.
 
 *English: write \`gogoham-live-$VER.iso\` to a USB stick (16 GB or more) – see \`LIESMICH.txt\`.*
 EOF

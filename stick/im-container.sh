@@ -83,6 +83,20 @@ if [ "${QUELLEN:-0}" = 1 ]; then
     else
         echo "WARNUNG: kein Quellcode-Abbild entstanden – siehe bau.log"
     fi
+    # live-build sucht die Quellen des Startladers unter den Binärnamen (grub-pc, grub-efi) und
+    # findet sie nicht („Unable to find a source package“) – GRUB und shim liegen aber auf dem Stick
+    # (GPL). Darum hier genau die verwendeten Versionen dazuholen (2026-11-28).
+    SL=/tmp/startlader-quellen
+    rm -rf "$SL"; mkdir -p "$SL"
+    sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/debian.sources 2>/dev/null || true
+    apt-get update -qq
+    for p in grub-pc-bin grub-efi-amd64-signed shim-unsigned shim-signed shim-helpers-amd64-signed; do
+        v=$(grep -o -E "Unpacking $p(:amd64)? \([^)]*\)" "$OUT/bau.log" | tail -n1 | sed 's/.*(\(.*\))/\1/')
+        if [ -z "$v" ]; then echo "WARNUNG: Version von $p nicht im bau.log"; continue; fi
+        (cd "$SL" && apt-get source --download-only -qq "$p=$v") || echo "WARNUNG: Quelle $p=$v fehlt"
+    done
+    tar -cf "$OUT/gogoham-live-$VER-quellen-startlader.tar" -C "$SL" .
+    echo "Startlader-Quellen: $OUT/gogoham-live-$VER-quellen-startlader.tar"
 fi
 # Reste des Baus wegräumen (sonst ~11 GB); der Paket-Zwischenspeicher bleibt für den nächsten Bau.
 # Nur wenn im Arbeitsordner nichts mehr eingehängt ist.
