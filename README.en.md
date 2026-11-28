@@ -69,7 +69,7 @@ Contests and rules*). The rule files are also available on their own:
 
 This installs GoGoHam like any other program and **keeps it up to date with your normal system
 update**. For trying it out, the finished packages are also available individually under
-[Releases](https://github.com/do2ggh/GoGoHam/releases) – but without automatic updates.
+[Releases](https://github.com/do2ggh/GoGoHam/releases/latest) – but without automatic updates.
 
 #### openSUSE Tumbleweed / Leap 16
 
@@ -117,7 +117,7 @@ The repository is hosted by the [openSUSE Build Service](https://build.opensuse.
 
 GoGoHam also runs straight from a USB stick (16 GB or more) – on any computer, without installing
 anything; logs and settings stay on the stick. The image `gogoham-live-<version>.iso` is available
-under [Releases](https://github.com/do2ggh/GoGoHam/releases). Write it to the stick with balenaEtcher,
+under [Releases](https://github.com/do2ggh/GoGoHam/releases/latest). Write it to the stick with balenaEtcher,
 `dd` or Rufus (**DD mode**) – see the included `LIESMICH.txt` and the manual, chapter "Live stick".
 
 ### From source (Arch, Garuda, Manjaro)

@@ -220,23 +220,48 @@ def out_name(kind, tag, version, orig):
     return f"gogoham-{version}-{tag}-any.pkg.tar.zst" + (".sig" if orig.endswith(".sig") else "")
 
 
+STICK_MARKE = "<!-- gogoham-live-stick -->"   # stick/veroeffentlichen.sh setzt dort den Stick ein
+
+
+def download_url(version, name):
+    return f"{REPO_URL}/releases/download/v{version}/{name}"
+
+
 def notes(version, rows):
+    """Seitentext: oben ein Wegweiser (Stick-Zeile ergänzt stick/veroeffentlichen.sh an der
+    Marke), dann Neuerungen, dann die Einzeldateien mit direkten Links (Nutzer 2026-11-28:
+    Seite war unübersichtlich – GitHub sortiert die Dateiliste nur nach dem Alphabet)."""
     cl = changelog_section(Path(__file__).resolve().parent.parent.joinpath("CHANGELOG.md")
                            .read_text(encoding="utf-8"), version)
-    table = "\n".join(f"| {disp} | `{name}` | `{cmd.format(f=name)}` |" for disp, cmd, name in rows)
+    table = "\n".join(f"| {disp} | [`{name}`]({download_url(version, name)}) | `{cmd.format(f=name)}` |"
+                      for disp, cmd, name in rows)
     return f"""**GoGoHam {version}** – Contest-Logger für Linux
 
-### Installieren
-**Empfohlen:** GoGoHam über die Paketquelle installieren – dann kommt es mit dem normalen
-Systemupdate automatisch mit. 👉 [Anleitung]({REPO_URL}#installation)
+## ⬇ Was brauchst du?
+{STICK_MARKE}
+- 🐧 **GoGoHam auf meinem Linux installieren** – empfohlen, Updates kommen dann mit dem normalen
+  Systemupdate: 👉 **[Anleitung]({REPO_URL}#installation)**
+- 📦 **Einzelne Paketdatei ohne Paketquelle** – nur zum Ausprobieren, ⚠ **keine automatischen
+  Updates**: Tabelle „Einzelne Paketdateien“ weiter unten
 
-Die Dateien unten sind **zum Ausprobieren** ohne Paketquelle. ⚠ Damit gibt es **keine
-automatischen Updates**. Alles, was GoGoHam braucht, holt der Befehl aus den normalen Quellen
-deines Systems dazu.
+*English:* 🐧 install from the package repository (recommended, with updates):
+[instructions]({REPO_URL}/blob/main/README.en.md#installation) · 📦 single package files below
+(no updates). Changelog in German.
+
+## Neu in dieser Version
+{cl}
+
+## 📦 Einzelne Paketdateien
+Klick auf den Dateinamen lädt sie herunter. Alles, was GoGoHam braucht, holt der Befehl aus den
+normalen Quellen deines Systems dazu.
+
+| System | Datei (Klick = Download) | Befehl im Ordner der Datei |
+|---|---|---|
+{table}
 
 **Einmalig vorher, nur openSUSE und Arch:** den GoGoHam-Schlüssel eintragen (sonst bricht die
 Installation mit „Signature verification failed“ bzw. „invalid or corrupted package“ ab). Unter
-Arch muss die Datei `….pkg.tar.zst.sig` im selben Ordner liegen.
+Arch muss zusätzlich die Datei [`….pkg.tar.zst.sig`]({download_url(version, next((n for _, _, n in rows if n.endswith(".pkg.tar.zst")), "") + ".sig")}) im selben Ordner liegen.
 ```bash
 # openSUSE
 sudo rpm --import {KEY}/openSUSE_Tumbleweed/repodata/repomd.xml.key
@@ -245,20 +270,8 @@ curl -fsSL {KEY}/Arch/x86_64/home_Franz_Arch.key | sudo pacman-key --add -
 sudo pacman-key --lsign-key {FINGERPRINT}
 ```
 
-| System | Datei | Befehl im Ordner der Datei |
-|---|---|---|
-{table}
-
 Die Dateien stammen aus der unterschriebenen Paketquelle (Schlüssel `{FINGERPRINT}`) und
-wurden dagegen geprüft; Prüfsummen in `SHA256SUMS`.
-
-### Neu in dieser Version
-{cl}
-
----
-**English:** Best installed from the package repository – updates then come with your normal
-system update: [instructions]({REPO_URL}/blob/main/README.en.md#installation). The files above
-are for trying GoGoHam out and do **not** receive updates. Changelog in German.
+wurden dagegen geprüft; Prüfsummen in [`SHA256SUMS`]({download_url(version, "SHA256SUMS")}).
 """
 
 

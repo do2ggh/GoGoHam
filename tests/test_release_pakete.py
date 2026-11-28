@@ -93,8 +93,12 @@ def test_text_mit_changelog():
     import gogoham
     rows = [("Debian 13", "sudo apt install ./{f}", "gogoham_x_debian13_all.deb")]
     text = rp.notes(gogoham.__version__, rows)
-    assert "keine\nautomatischen Updates" in text
+    assert "keine automatischen\n  Updates" in text
     assert "`sudo apt install ./gogoham_x_debian13_all.deb`" in text
+    # Wegweiser oben, Stick-Marke darin, Dateien als direkte Links
+    assert text.index(rp.STICK_MARKE) < text.index("## Neu in dieser Version") < text.index("| System |")
+    assert (f"[`gogoham_x_debian13_all.deb`](https://github.com/do2ggh/GoGoHam/releases/download/"
+            f"v{gogoham.__version__}/gogoham_x_debian13_all.deb)") in text
     assert rp.changelog_section((ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
                                 gogoham.__version__) in text
     with pytest.raises(SystemExit):

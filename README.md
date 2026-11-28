@@ -70,7 +70,7 @@ Regeln*). Die Regel-Dateien gibt es auch einzeln: [GoGoHam-rules](https://github
 
 So wird GoGoHam wie jedes andere Programm installiert und **mit dem normalen Systemupdate
 aktuell gehalten**. Nur zum Ausprobieren gibt es die fertigen Pakete auch einzeln unter
-[Releases](https://github.com/do2ggh/GoGoHam/releases) – dann aber ohne automatische Updates.
+[Releases](https://github.com/do2ggh/GoGoHam/releases/latest) – dann aber ohne automatische Updates.
 
 #### openSUSE Tumbleweed / Leap 16
 
@@ -118,7 +118,7 @@ Die Paketquelle liegt beim [openSUSE Build Service](https://build.opensuse.org/p
 
 GoGoHam läuft auch direkt von einem USB-Stick (ab 16 GB) – an jedem Rechner, ohne etwas zu
 installieren; Logs und Einstellungen bleiben auf dem Stick. Das Abbild
-`gogoham-live-<Version>.iso` gibt es unter [Releases](https://github.com/do2ggh/GoGoHam/releases).
+`gogoham-live-<Version>.iso` gibt es unter [Releases](https://github.com/do2ggh/GoGoHam/releases/latest).
 Auf den Stick schreiben mit balenaEtcher, `dd` oder Rufus (**DD-Modus**) – Anleitung in der
 beiliegenden `LIESMICH.txt` und im Handbuch, Kapitel „Live-Stick“.
 
