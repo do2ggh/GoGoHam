@@ -4,6 +4,13 @@ Was in jeder Version neu ist, die neueste zuerst. Die Versionsnummern: 0.Y = Sam
 
 *Changelog of GoGoHam, newest first (in German).*
 
+## Neu in 0.10.48.1
+
+* **Uhrzeit-Hinweis: „2 Minuten“ statt „120,0 Sekunden“.** Lag die PC-Uhr knapp unter zwei Minuten
+  daneben, schrieb GoGoHam „geht 120,0 Sekunden nach“. Jetzt heißt es richtig „2 Minuten“.
+* **Handbuch: wo es das Stick-Abbild gibt.** Das Kapitel „Stick selbst schreiben“ nennt jetzt die
+  Download-Seite.
+
 ## Neu in 0.10.48
 
 * **Live-Stick: WLAN ohne Linux-Kenntnisse.** Ist nach dem Start kein Internet da und hat der Rechner

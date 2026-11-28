@@ -29,6 +29,7 @@ from pathlib import Path
 ORIGIN = "https://downloadcontent.opensuse.org/repositories/home:/Franz"
 FINGERPRINT = "D389DED10CE918036666175678AF9B87F520FFB8"
 REPO_URL = "https://github.com/do2ggh/GoGoHam"
+API_RELEASES = "https://api.github.com/repos/do2ggh/GoGoHam/releases?per_page=30"
 KEY = "https://download.opensuse.org/repositories/home:/Franz"
 
 # (OBS-Repo, Art, Kennung im Dateinamen, Anzeige auf der Release-Seite, Installationsbefehl)
@@ -227,7 +228,46 @@ def download_url(version, name):
     return f"{REPO_URL}/releases/download/v{version}/{name}"
 
 
-def notes(version, rows):
+def stick_line(version, releases):
+    """Wegweiser-Zeile zum neuesten Stick-Abbild (Liste wie GitHub /releases, neueste zuerst).
+    Gleicher Aufbau wie in stick/veroeffentlichen.sh (2 Zeilen, beginnt mit „- 💾“). Hat die
+    Version kein eigenes Abbild, zeigt sie auf das letzte (Nutzer 2026-11-28: /releases/latest
+    darf nie ohne Stick sein). None, wenn es noch keins gibt."""
+    tags = {r.get("tag_name") for r in releases}
+    for r in releases:
+        tag = r.get("tag_name", "")
+        if not tag.startswith("v") or r.get("draft"):
+            continue
+        for a in r.get("assets") or []:
+            m = re.fullmatch(r"gogoham-live-(.+)\.iso", a.get("name", ""))
+            if not m:
+                continue
+            sv, url = m.group(1), f"{REPO_URL}/releases/download/{tag}"
+            size = f"{a.get('size', 0) / 1e9:.1f}".replace(".", ",")
+            qtag = f"quellen-{sv}"
+            quellen = (f" Quelltexte (GPL): [eigene Seite]({REPO_URL}/releases/tag/{qtag})"
+                       if qtag in tags else "")
+            stand = "" if tag == f"v{version}" else (
+                f" Das Abbild ist von GoGoHam {sv} – GoGoHam darauf aktualisierst du danach per"
+                f" Hilfe → „Nach neuer Version suchen …“.")
+            return (f"- 💾 **Live-Stick – ohne Installation, startet vom USB-Stick (ab 16 GB):** 👉 "
+                    f"**[{a['name']} herunterladen]({url}/{a['name']})** ({size} GB) · "
+                    f"[Anleitung (LIESMICH)]({url}/LIESMICH.txt)  \n"
+                    f"  Schreiben mit balenaEtcher, `dd` oder Rufus (**DD-Modus**).{stand}{quellen}")
+    return None
+
+
+def fetch_releases():
+    req = urllib.request.Request(API_RELEASES, headers={"Accept": "application/vnd.github+json",
+                                                         "User-Agent": "gogoham-release"})
+    if os.environ.get("GH_TOKEN"):
+        req.add_header("Authorization", "Bearer " + os.environ["GH_TOKEN"])
+    import json
+    with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310 (feste Adresse)
+        return json.loads(r.read().decode("utf-8"))
+
+
+def notes(version, rows, stick=None):
     """Seitentext: oben ein Wegweiser (Stick-Zeile ergänzt stick/veroeffentlichen.sh an der
     Marke), dann Neuerungen, dann die Einzeldateien mit direkten Links (Nutzer 2026-11-28:
     Seite war unübersichtlich – GitHub sortiert die Dateiliste nur nach dem Alphabet)."""
@@ -239,7 +279,7 @@ def notes(version, rows):
 
 ## ⬇ Was brauchst du?
 {STICK_MARKE}
-- 🐧 **GoGoHam auf meinem Linux installieren** – empfohlen, Updates kommen dann mit dem normalen
+{stick + chr(10) if stick else ""}- 🐧 **GoGoHam auf meinem Linux installieren** – empfohlen, Updates kommen dann mit dem normalen
   Systemupdate: 👉 **[Anleitung]({REPO_URL}#installation)**
 - 📦 **Einzelne Paketdatei ohne Paketquelle** – nur zum Ausprobieren, ⚠ **keine automatischen
   Updates**: Tabelle „Einzelne Paketdateien“ weiter unten
@@ -311,7 +351,12 @@ def main():
                 rows.append((disp, cmd, name))
     out.joinpath("SHA256SUMS").write_text("\n".join(sums) + "\n")
     if a.notes:
-        Path(a.notes).write_text(notes(a.version, rows), encoding="utf-8")
+        try:
+            stick = stick_line(a.version, fetch_releases())
+        except (OSError, ValueError) as e:            # ohne Stick-Zeile weiter, Seite trotzdem anlegen
+            print("Stick-Abbild nicht gefunden:", e, flush=True)
+            stick = None
+        Path(a.notes).write_text(notes(a.version, rows, stick), encoding="utf-8")
     print("fertig:", len(sums), "Dateien in", out)
 
 

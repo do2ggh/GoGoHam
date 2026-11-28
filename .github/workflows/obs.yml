@@ -37,6 +37,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Fertige Pakete von OBS holen und prüfen (wartet bis zu 4 Stunden)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python3 tools/release_pakete.py "${GITHUB_REF_NAME#v}" pakete --notes notes.md --warten 14400
       - name: Release-Seite anlegen
         env:

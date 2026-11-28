@@ -72,7 +72,7 @@ def is_wrong(off: float | None, limit: float = LIMIT_S) -> bool:
 
 
 def describe(off: float) -> str:
-    sec = abs(off)
+    sec = round(abs(off), 1)           # erst runden: 119,97 s → „2 Minuten“, nicht „120,0 Sekunden“
     amount = tr("{n} Sekunden", n=num(sec, 1)) if sec < 120 else \
         tr("{n} Minuten", n=num(sec / 60))
     return tr("Die Uhr deines PCs geht {amount} nach.", amount=amount) if off > 0 else \

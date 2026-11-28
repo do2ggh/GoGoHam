@@ -103,3 +103,17 @@ def test_text_mit_changelog():
                                 gogoham.__version__) in text
     with pytest.raises(SystemExit):
         rp.changelog_section("## Neu in 1.0\n* x\n", "0.1")
+
+
+def test_stick_zeile_neuestes_abbild():
+    rel = [{"tag_name": "v0.10.48.1", "assets": [{"name": "SHA256SUMS", "size": 1}]},
+           {"tag_name": "quellen-0.10.48", "assets": [{"name": "gogoham-live-0.10.48-quellen.iso.teil00"}]},
+           {"tag_name": "v0.10.48", "assets": [{"name": "gogoham-live-0.10.48.iso", "size": 1512136704}]}]
+    z = rp.stick_line("0.10.48.1", rel)
+    assert "releases/download/v0.10.48/gogoham-live-0.10.48.iso)** (1,5 GB)" in z
+    assert "Das Abbild ist von GoGoHam 0.10.48" in z and "releases/tag/quellen-0.10.48" in z
+    eigene = rp.stick_line("0.10.48", rel)
+    assert "Das Abbild ist" not in eigene and eigene.startswith("- 💾") and eigene.count("\n") == 1
+    assert rp.stick_line("0.1", [{"tag_name": "v0.1", "assets": []}]) is None
+    text = rp.notes("0.10.48", [("Debian 13", "x {f}", "a.deb")], z)
+    assert text.index(rp.STICK_MARKE) < text.index("- 💾") < text.index("- 🐧")

@@ -4,7 +4,7 @@
 Zusatzbedingungen nach § 7 GPL-3.0: ADDITIONAL-TERMS.md · Fremde Teile: THIRD-PARTY.md
 """
 
-__version__ = "0.10.48"
+__version__ = "0.10.48.1"
 APP_NAME = "GoGoHam"
 APP_TITLE = "GoGoHam by DO2GGH"
 CONTACT_EMAIL = "do2ggh.de@gmail.com"     # Kontakt-Knopf und Fehlerbericht (nur vor 1.0)
